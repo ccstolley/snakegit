@@ -1,0 +1,12 @@
+[submodule "var/submodules/nose"]
+	path = var/submodules/nose
+	url = git://github.com/nose-devs/nose.git
+[submodule "var/submodules/pyflakes"]
+	path = var/submodules/pyflakes
+	url = git://github.com/kevinw/pyflakes.git
+[submodule "var/submodules/pylint"]
+	path = var/submodules/pylint
+	url = git://github.com/mattjmorrison/Pylint.git
+[submodule "var/submodules/pep8"]
+	path = var/submodules/pep8
+	url = git://github.com/jcrocholl/pep8.git
