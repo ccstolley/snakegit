@@ -1,0 +1,8 @@
+include
+lib
+local
+bin/activate*
+bin/easy_install*
+bin/pip
+bin/pip*
+bin/python*
