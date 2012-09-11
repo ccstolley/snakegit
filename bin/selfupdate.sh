@@ -6,7 +6,7 @@ echo "Checking for updates"
 cd $SNAKEGIT_HOME
 
 git pull origin master
-git submodule updates
+git submodule update
 
 git config --get-regexp github.* > /dev/null
 
