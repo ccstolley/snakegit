@@ -5,32 +5,42 @@ echo "Checking for updates"
 
 cd $SNAKEGIT_HOME
 
-git pull origin master
-git submodule init
-git submodule update
+git pull origin master >> $SNAKEGIT_HOME/install.log
+git submodule init >> $SNAKEGIT_HOME/install.log
+git submodule update >> $SNAKEGIT_HOME/install.log
 
-git config --get-regexp github.* > /dev/null
+echo "Configuring your github account"
+echo ""
+
 
 function register_github {
-echo "Registering with github"
+  FORMATTED_AUTH=`curl -u $1 -d '{"scopes": ["repo","gist"], "note": "SnakeGit tools"}' https://api.github.com/authorizations`
+  AUTH=`echo $FORMATTED_AUTH | tr -d '\n'`
+  TOKEN=`python -c "import json; data = json.loads('$AUTH') ; print data[\"token\"]"`
+  URL=`python -c "import json; data = json.loads('$AUTH') ; print data[\"url\"]"`
+  git config --global --replace-all github.token $TOKEN
+  git config --global --replace-all github.url $URL
+  git config --global --replace-all github.user $1
 }
 
 function unregister_github {
-echo "Unregister with github"
+  curl -X DELETE -u $1 $AUTH_URL >> $SNAKEGIT_HOME/install.log 2>&1 
 }
 
+git config --get github.token > /dev/null
 if [ $? -eq 0 ]
 then
   echo "You already have github configured in your ~/.gitconfig"
   echo ""
-  echo "Do you want to reregister your account [n]?"
-  read REGISTER
+  read -p "Do you want to reregister your account [n]? " REGISTER
   if [ "$REGISTER" == "y" ] || [ "$REGISTER" == "Y" ]
   then
-    unregister_github
-    register_github
+    USER=`git config --get github.user`
+    #unregister_github $USER
+    register_github $USER
   fi
 else
-  register_github
+  read -p "Github Username: " USER
+  register_github $USER
 fi
 
