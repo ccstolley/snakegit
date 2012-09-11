@@ -15,6 +15,14 @@ echo ""
 
 function register_github {
   FORMATTED_AUTH=`curl -u $1 -d '{"scopes": ["repo","gist"], "note": "SnakeGit tools"}' https://api.github.com/authorizations`
+  echo $FORMATTED_AUTH | grep message > /dev/null
+  if [ $? -eq 0 ]
+  then
+    ERROR_MESSAGE=`echo $FORMATTED_AUTH | tr -d '\n'`
+    MESSAGE=`python -c "import json; data = json.loads('$ERROR_MESSAGE') ; print data[\"message\"]"`
+    echo "Github Error: $MESSAGE"
+    exit 1
+  fi
   AUTH=`echo $FORMATTED_AUTH | tr -d '\n'`
   TOKEN=`python -c "import json; data = json.loads('$AUTH') ; print data[\"token\"]"`
   URL=`python -c "import json; data = json.loads('$AUTH') ; print data[\"url\"]"`
