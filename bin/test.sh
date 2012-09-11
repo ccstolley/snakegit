@@ -1,77 +1,58 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Initialize variables
-test "xxx${DEV_TOOLS_HOME}" == "xxx"     && DEV_TOOLS_HOME=${HOME}/.snakegit
-test "xxx${PIP_DOWNLOAD_CACHE}" == "xxx" && PIP_DOWNLOAD_CACHE=`pwd`/vendor/cache
-test "xxx${VIRTUALENV_DIR}" == "xxx"     && VIRTUALENV_DIR=`pwd`/vendor/python
-test "xxx${TEST_OUTPUT_DIR}" == "xxx"    && TEST_OUTPUT_DIR=`pwd`/test_reports
+test "xxx${DEV_TOOLS_HOME}" = "xxx"     && DEV_TOOLS_HOME=${HOME}/.snakegit
+test "xxx${PIP_DOWNLOAD_CACHE}" = "xxx" && PIP_DOWNLOAD_CACHE=`pwd`/vendor/cache
+test "xxx${VIRTUALENV_DIR}" = "xxx"     && VIRTUALENV_DIR=`pwd`/vendor/python
+test "xxx${TEST_OUTPUT_DIR}" = "xxx"    && TEST_OUTPUT_DIR=`pwd`/test_reports
 
 # run build
 $DEV_TOOLS_HOME/bin/build.sh
 
-function usage {
+usage()
+{
 	echo "test [options]"
 	echo ""
-	echo "-h|--help                    Show this message"
-	echo "-x|--xunit                   Generate an XUnit compatible report"
-	echo "-c|--coverage                Generate a test coverage report"
-	echo "-p|--cover-package=<pkg>     Which package should have coverage measured"
-	echo "-w|--test-dir=<dir>          Which directory holds the tests"
+	echo "-h                    Show this message"
+	echo "-x                    Generate an XUnit compatible report"
+	echo "-c                    Generate a test coverage report"
+	echo "-p=<pkg>              Which package should have coverage measured"
+	echo "-w=<dir>              Which directory holds the tests"
 }
 
-ARGS=`getopt -o hxcpw: -l help,xunit,coverage,cover-package:,test-dir: -- "$@"`
-
-test $? -eq 0 || exit 1
-
-eval set -- "$ARGS"
-
-while [ $# -gt 0 ];
-do
-	case "$1" in
+while getopts hxcpw: o
+do 
+	case "$o" in
 		
-		-h|--help)
+		h)
 			usage
 			exit 0
 			;;
 
-		-x|--xunit)
+		x)
 			JUNIT_OPTS="--with-xunit --xunit-file=$TEST_OUTPUT_DIR/nosetests.xml"
-			shift;;
+			;;
 			
-		-c|--coverage)
+		c)
 			COVERAGE_OPTS="--with-coverage --cover-xml \
 				--cover-xml-file=$TEST_OUTPUT_DIR/coverage.xml"
-			shift;;
-
-		-p|--cover-package)
-			if [ -n "$2" ]
-			then
-				COVER_PACKAGE_OPTS="--cover-package=$2"
-			fi
-			shift 2;;
-
-		-w|test-dir)
-			if [ -n "$2" ]
-			then
-				TEST_DIR=$2
-			fi
-		shift 2;;
-
-		--)
-			shift
-			break;;
-
-		-*)
-			usage 1>&2
-			exit
 			;;
-		*)
+
+		p)
+			COVER_PACKAGE_OPTS="--cover-package=$OPTARG"
+			;;
+
+		w)
+			TEST_DIR="$OPTARG"
+			;;	
+
+		[?])
 			usage 1>&2
 			exit
 			;;
 	esac
-	shift
 done
+#shift $OPTIND-1
 
 # Build before running tests
 /usr/bin/env bash $DEV_TOOLS_HOME/bin/build.sh

@@ -1,76 +1,70 @@
-#!/usr/bin/env bash
-[ "${SNAKEGIT_HOME}xxx" == "xxx" ]  && SNAKEGIT_HOME=${HOME}/.snakegit
+#!/usr/bin/env sh
+[ "${SNAKEGIT_HOME}xxx" = "xxx" ]  && SNAKEGIT_HOME=${HOME}/.snakegit
 
-[ "${VIRTUALENV_DIR}xxx" == "xxx" ] && VIRTUALENV_DIR=./vendor/python
+[ "${VIRTUALENV_DIR}xxx" = "xxx" ] && VIRTUALENV_DIR=./vendor/python
 
 $VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pylint
 $VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pep8
 $VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pyflakes
 
-function usage {
+usage()
+{
   echo "Usage: lint.sh"
-  echo "-l|--pylint               Run PyLint"
-  echo "-p|--pep8                 Run Pep8"
-  echo "-f|--pyflakes             Run PyFlakes"
-  echo "-s|--src value            Lint the specified src directory"
-  echo "-o|--output dirctory      Write to the specified output directory"
-  echo "-m|--module value         Module to lint"
+  echo "-l              Run PyLint"
+  echo "-p              Run Pep8"
+  echo "-f              Run PyFlakes"
+  echo "-s=value        Lint the specified src directory"
+  echo "-o=dirctory     Write to the specified output directory"
+  echo "-m=value        Module to lint"
   exit 1
 }
 
-if ! ARGS=$(getopt -o lpfs:o:m: -l pylint,pep8,pyflakes,src:,output:,module: -- "$@")
-then
-  usage
-fi
-
-eval set -- $ARGS
-
-while [ $# -gt 0 ]
+while getopts lpfs:o:m: o
 do
-  case "$1" in
-    -l|--pylint)
+  case "$o" in
+    l)
       PYLINT=true
       ;;
       
-    -p|--pep8)
+    p)
       PEP8=true
       ;;
       
-    -f|--pyflakes)
+    f)
       PYFLAKES=true
       ;;
 
-    -s|--src)
-      SRC_DIR=$2
-      shift;;
+    s)
+      SRC_DIR="$OPTARG"
+      ;;
 
-    -o|--output)
-      TEST_OUTPUT_DIR="$2"
-      shift;;
+    o)
+      TEST_OUTPUT_DIR="$OPTARG"
+      ;;
     
-    -m|--module)
-      MODULE="$2"
-      shift;;
+    m)
+      MODULE="$OPTARG"
+      ;;
 
-    --)
-      shift;
-      break;;
-    (*)
-      break;;
+    [?])
+     usage 
+     exit 1
+     ;;
   esac
-  shift
 done
-
-function require_src {
-  if [ "${SRC_DIR}xxx" == "xxx" ]
+echo "Done arg parsing"
+require_src()
+{
+  if [ "${SRC_DIR}xxx" = "xxx" ]
   then
     echo "You must supply a source package with -s"
     exit 1
   fi
 }
 
-function require_module {
-  if [ "${MODULE}xxx" == "xxx" ]
+require_module()
+{
+  if [ "${MODULE}xxx" = "xxx" ]
   then
     echo "You must supply a module to lint with -m"
     exit 1
@@ -79,23 +73,23 @@ function require_module {
 
 $VIRTUALENV_DIR/bin/python setup.py install
 
-[ "${TEST_OUTPUT_DIR}xxx" == "xxx" ] && TEST_OUTPUT_DIR=test_results
+[ "${TEST_OUTPUT_DIR}xxx" = "xxx" ] && TEST_OUTPUT_DIR=test_results
 
 mkdir -p $TEST_OUTPUT_DIR
 
-if [ -z $PYLINT ]
+if [ "${PYLINT}xxx" != "xxx" ]
 then
   require_module
-  [ "${MODULE}xxx" == "xxx" ] && $VIRTUALENV_DIR/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
+  $VIRTUALENV_DIR/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
 fi
 
-if [ "${PEP8}xxx" == "xxx" ] 
+if [ "${PEP8}xxx" != "xxx" ] 
 then
   require_src
   $VIRTUALENV_DIR/bin/pep8 --format=pylint $SRC_DIR | tee $TEST_OUTPUT_DIR/pep8.txt
 fi
 
-if [ "${PYFLAKES}xxx" == "xxx" ]
+if [ "${PYFLAKES}xxx" != "xxx" ]
 then
   require_src
   $VIRTUALENV_DIR/bin/pyflakes $SRC_DIR | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}' | tee $TEST_OUTPUT_DIR/pyflakes.txt 

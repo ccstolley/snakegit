@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
-[ "${DEV_TOOLS_HOME}xxx" == "xxx"     ] &&  DEV_TOOLS_HOME=${HOME}/.snakegit
-[ "${VIRTUALENV_DIR}xxx" == "xxx"     ] &&  VIRTUALENV_DIR=vendor/python
-[ "${PIP_DOWNLOAD_CACHE}xxx" == "xxx" ] &&  PIP_DOWNLOAD_CACHE=vendor/cache
+#!/usr/bin/env sh
+[ "${DEV_TOOLS_HOME}xxx" = "xxx"     ] &&  DEV_TOOLS_HOME=${HOME}/.snakegit
+[ "${VIRTUALENV_DIR}xxx" = "xxx"     ] &&  VIRTUALENV_DIR=vendor/python
+[ "${PIP_DOWNLOAD_CACHE}xxx" = "xxx" ] &&  PIP_DOWNLOAD_CACHE=vendor/cache
 
 
 /usr/bin/env bash $DEV_TOOLS_HOME/bin/virtualenv.sh
