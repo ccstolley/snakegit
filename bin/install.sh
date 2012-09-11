@@ -45,7 +45,7 @@ configure_os_x()
 	read INSTALL_BREW
 	if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
 	then
-	 ruby < `curl -fsSkL raw.github.com/mxcl/homebrew/go`
+	 ruby < curl -fsSkL raw.github.com/mxcl/homebrew/go
 	fi
  fi
  which brew > /dev/null
