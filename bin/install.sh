@@ -107,8 +107,9 @@ read USERNAME
 
 if [ "xxx${USERNAME}" != "xxx" ] && [ "$USERNAME" != "$current_username" ]
 then	
- git config --global	--unset pypi.user
- git config --global --add pypi.user $USERNAME
+ git config --global --replace-all pypi.user $USERNAME
+ git config --global --replace-all pypi.host repo.n-s.us
+ git config --global --replace-all pypi.scheme https
 fi
 
 # Install git aliases
