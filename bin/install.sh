@@ -2,10 +2,10 @@
 
 # Welcome message
 cat <<EOM
-____              _         ____ _ _
+ ____              _         ____ _ _
 / ___| _ __   __ _| | _____ / ___(_) |_
 \___ \| '_ \ / _' | |/ / _ \ |  _| | __|
-___) | | | | (_| |   <  __/ |_| | | |_ 
+ ___) | | | | (_| |   <  __/ |_| | | |_ 
 |____/|_| |_|\__,_|_|\_\___|\____|_|\__|
 
 EOM
@@ -72,8 +72,8 @@ fi
 
 echo "Configuring SnakeGit home in ${HOME}/.bashrc"
 echo ""
-grep SNAKEGIT_HOME ~/.bashrc
-if [ $? -eq 0 ]
+grep SNAKEGIT_HOME ~/.bashrc > /dev/null
+if [ $? -ne 0 ]
 then
  echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc
 fi
@@ -99,8 +99,7 @@ current_username=`git config --global --get pypi.user`
 echo "Please enter your PyPi username: [$current_username]"
 read USERNAME
 
-echo "got username $USERNAME"
-if [ "$USERNAME" != "$current_username" ]
+if [ "xxx${USERNAME}" != "xxx" ] && [ "$USERNAME" != "$current_username" ]
 then	
  git config --global	--unset pypi.user
  git config --global --add pypi.user $USERNAME
@@ -109,45 +108,53 @@ fi
 # Install git aliases
 echo "Now installing git aliases"
 echo ""
-git config --get alias.build > /dev/null
-if [ $? -ne 0 ]
+
+BUILD="! /usr/bin/env bash $SNAKEGIT_HOME/bin/build.sh"
+OLD_BUILD=`git config --get alias.build > /dev/null`
+if [ "$OLD_BUILD" != "$BUILD" ]
 then
- git config --global --add alias.build "! /usr/bin/env bash $SNAKEGIT_HOME/bin/build.sh"
+ git config --global --replace-all alias.build "$BUILD"
 fi
 
-git config --get alias.upload-package > /dev/null
-if [ $? -ne 0 ]
+UPLOAD="! /usr/bin/env bash $SNAKEGIT_HOME/bin/upload.sh"
+OLD_UPLOAD=`git config --get alias.upload-package > /dev/null`
+if [ "$OLD_UPLOAD" != "$UPLOAD" ]
 then
- git config --global --add alias.upload-package "! /usr/bin/env bash $SNAKEGIT_HOME/bin/upload.sh"
+ git config --global --replace-all alias.upload-package "$UPLOAD"
 fi
 
-git config --get alias.test > /dev/null
-if [ $? -ne 0 ]
+TEST="! /usr/bin/env bash $SNAKEGIT_HOME/bin/test.sh"
+OLD_TEST=`git config --get alias.test > /dev/null`
+if [ "$OLD_TEST" != "$TEST" ]
 then
- git config --global --add alias.test "! /usr/bin/env bash $SNAKEGIT_HOME/bin/test.sh"
+ git config --global --replace-all alias.test "$TEST"
 fi
 
-git config --get alias.lint > /dev/null
-if [ $? -ne 0 ]
+LINT="! /usr/bin/env bash $SNAKEGIT_HOME/bin/lint.sh"
+OLD_LINT=`git config --get alias.lint > /dev/null`
+if [ "$OLD_LINT" != "$LINT" ]
 then
- git config --global --add alias.lint "! /usr/bin/env bash $SNAKEGIT_HOME/bin/lint.sh"
+ git config --global --replace-all alias.lint "$LINT"
 fi
 
-git config --get alias.sdist > /dev/null
-if [ $? -ne 0 ]
+SLITHER="! /usr/bin/env bash $SNAKEGIT_HOME/bin/sdist.sh"
+OLD_SLITHER=`git config --get alias.sdist`
+if [ "$OLD_SLITHER" != "$SLITHER" ]
 then
- git config --global --add alias.sdist "! /usr/bin/env bash $SNAKEGIT_HOME/bin/sdist.sh"
+ git config --global --replace-all alias.sdist "$SLITHER"
 fi
 
-git config --get alias.dev-clean > /dev/null
-if [ $? -ne 0 ]
+SNAKE_SHED="! /usr/bin/env bash $SNAKEGIT_HOME/bin/clean.sh"
+OLD_SNAKE_SHED=`git config --get alias.dev-clean`
+if [ "$SNAKE_SHED" != "$OLD_SNAKE_SHED" ]
 then
- git config --global --add alias.dev-clean "! /usr/bin/env bash $SNAKEGIT_HOME/bin/clean.sh"
+ git config --global --replace-all alias.dev-clean "$SNAKE_SHED"
 fi
 
-git config --get alias.selfupdate > /dev/null
-if [ $? -ne 0 ]
+SNAKE_UPDATE="! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate.sh"
+OLD_SNAKE_UPDATE=`git config --get alias.selfupdate`
+if [ "$SNAKE_UPDATE" != "$OLD_SNAKE_UPDATE" ]
 then
- git config --global --add alias.selfupdate "! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate.sh"
+ git config --global --replace-all alias.snakeupdate "$SNAKE_UPDATE"
 fi
 
