@@ -6,3 +6,4 @@ bin/easy_install*
 bin/pip
 bin/pip*
 bin/python*
+*.log
