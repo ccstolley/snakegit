@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-test -z $SNAKEGIT_HOME || SNAKEGIT_HOME=${HOME}/.snakegit
+[ "xxx${SNAKEGIT_HOME}" == "xxx" ] && SNAKEGIT_HOME=${HOME}/.snakegit
 
 cd $SNAKEGIT_HOME
 
