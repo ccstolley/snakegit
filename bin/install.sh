@@ -70,12 +70,12 @@ then
  SNAKEGIT_HOME=$LOCATION
 fi
 
-echo "Configuring SnakeGit home in ${HOME}/.bashrc"
+echo "Configuring SnakeGit home in ${HOME}/.profile"
 echo ""
-grep SNAKEGIT_HOME ~/.bashrc > /dev/null
+grep SNAKEGIT_HOME ~/.profile > /dev/null
 if [ $? -ne 0 ]
 then
- echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc
+ echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.profile
 fi
 
 if [ -e $SNAKEGIT_HOME ]
@@ -158,3 +158,4 @@ then
  git config --global --replace-all alias.snakeupdate "$SNAKE_UPDATE"
 fi
 
+bash $SNAKEGIT_HOME/bin/selfupdate.sh
