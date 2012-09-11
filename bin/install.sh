@@ -56,13 +56,13 @@ fi
 
 }
 
-if [[ "$unamestr" == 'darwin' ]]
+if [[ "$unamestr" == 'Darwin' ]]
 then
 	configure_os_x
 fi
 
 #Now that that is taken care of, install snakegit
-test -v SNAKEGIT_HOME || SNAKEGIT_HOME=${HOME}/.snakegit
+test -z $SNAKEGIT_HOME || SNAKEGIT_HOME=${HOME}/.snakegit
 echo "Where do you want to install SnakeGit [$SNAKEGIT_HOME] ?"
 read LOCATION
 if [ "$LOCATION" != "" ]
@@ -95,7 +95,7 @@ fi
 current_username=`git config --global --get pypi.user`
 echo "Please enter your PyPi username: [$current_username]"
 read USERNAME
-if [ -v current_username ]
+if [ -z $current_username ]
 then
 	if [ ! "$USERNAME" == '' ] && [ "$USERNAME" != "$current_username" ]
 	then	

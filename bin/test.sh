@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # Initialize variables
-test -v DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
-test -v PIP_DOWNLOAD_CACHE || PIP_DOWNLOAD_CACHE=`pwd`/vendor/cache
-test -v VIRTUALENV_DIR || VIRTUALENV_DIR=`pwd`/vendor/python
-test -v TEST_OUTPUT_DIR || TEST_OUTPUT_DIR=`pwd`/test_reports
+test -z $DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
+test -z $PIP_DOWNLOAD_CACHE || PIP_DOWNLOAD_CACHE=`pwd`/vendor/cache
+test -z $VIRTUALENV_DIR || VIRTUALENV_DIR=`pwd`/vendor/python
+test -z $TEST_OUTPUT_DIR || TEST_OUTPUT_DIR=`pwd`/test_reports
 
 # run build
 $DEV_TOOLS_HOME/bin/build.sh

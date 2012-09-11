@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-test -f DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
-test -v VIRTUALENV_DIR || VIRTUALENV_DIR=vendor/python
-test -v PIP_DOWNLOAD_CACHE || PIP_DOWNLOAD_CACHE=vendor/cache
+test -z $DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
+test -z $VIRTUALENV_DIR || VIRTUALENV_DIR=vendor/python
+test -z $PIP_DOWNLOAD_CACHE || PIP_DOWNLOAD_CACHE=vendor/cache
 
 /usr/bin/env bash $DEV_TOOLS_HOME/bin/virtualenv.sh
 

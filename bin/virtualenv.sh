@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-test -v DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
+test -z $DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
 
 VIRTUALENV_SRC=$DEV_TOOLS_HOME/var/submodules/virtualenv
-test -v VIRTUALENV_DIR || VIRTUALENV_DIR=`pwd`/vendor/python
+test -z $VIRTUALENV_DIR || VIRTUALENV_DIR=`pwd`/vendor/python
 
 if [ ! -f $VIRTUALENV_DIR/bin/python ]
 then
