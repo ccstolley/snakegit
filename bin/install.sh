@@ -2,10 +2,10 @@
 
 # Welcome message
 cat <<EOM
- ____              _         ____ _ _
+____              _         ____ _ _
 / ___| _ __   __ _| | _____ / ___(_) |_
 \___ \| '_ \ / _' | |/ / _ \ |  _| | __|
- ___) | | | | (_| |   <  __/ |_| | | |_ 
+___) | | | | (_| |   <  __/ |_| | | |_ 
 |____/|_| |_|\__,_|_|\_\___|\____|_|\__|
 
 EOM
@@ -21,8 +21,8 @@ read INSTALL
 
 if [ "$INSTALL" == "n" ] || [ "$INSTALL" == "N" ]
 then
-	echo "Sorry to hear it"
-	exit
+ echo "Sorry to hear it"
+ exit
 fi
 
 # getopt on OS X is inherently broken.  We might end up with unexpected 
@@ -35,30 +35,30 @@ function configure_os_x {
 which brew
 if [[ $? -ne 0 ]]
 then
-	echo "Some bash features do not work nicely with OS X"
-	echo "To fix this, we can install Homebrew (http://mxcl.github.com/homebrew)"
-	echo "Homebrew is a package manager similar to apt-get or yum"
-	echo "It can make lots of tasks a lot easier, in addition to"
-	echo "fixing the issues here."
-	echo ""
-	echo "Would you like to install brew now (recommended) [y] ?"
-	read INSTALL_BREW
-	if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
-	then
-		ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
-		brew install gnu-getopt
-		echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bashrc
-		echo "To make sure that you pick up the changes made here"
-		echo "Please reload your ~/.bashrc file:"
-		echo ". ~/.bashrc"
-	fi
+ echo "Some bash features do not work nicely with OS X"
+ echo "To fix this, we can install Homebrew (http://mxcl.github.com/homebrew)"
+ echo "Homebrew is a package manager similar to apt-get or yum"
+ echo "It can make lots of tasks a lot easier, in addition to"
+ echo "fixing the issues here."
+ echo ""
+ echo "Would you like to install brew now (recommended) [y] ?"
+ read INSTALL_BREW
+ if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
+ then
+	ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
+	brew install gnu-getopt
+	echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bashrc
+	echo "To make sure that you pick up the changes made here"
+	echo "Please reload your ~/.bashrc file:"
+	echo ". ~/.bashrc"
+ fi
 fi
 
 }
 
 if [ "$unamestr" == 'Darwin' ]
 then
-	configure_os_x
+ configure_os_x
 fi
 
 #Now that that is taken care of, install snakegit
@@ -67,28 +67,31 @@ echo "Where do you want to install SnakeGit [$SNAKEGIT_HOME] ?"
 read LOCATION
 if [ "$LOCATION" != "" ]
 then
-	SNAKEGIT_HOME=$LOCATION
+ SNAKEGIT_HOME=$LOCATION
 fi
 
 echo "Configuring SnakeGit home in ${HOME}/.bashrc"
 echo ""
 grep SNAKEGIT_HOME ~/.bashrc
-test $? -ne 0 || echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc 
-
-if [ -d $SNAKEGIT_HOME ]
+if [ $? -eq 0 ]
 then
-	cd $SNAKEGIT_HOME
-	echo "Updating your SnakeGit install"
-	echo ""
-	git pull origin master >> $SNAKEGIT_HOME/install.log 2>&1 
-	git submodule update >> $SNAKEGIT_HOME/install.log 2>&1
+ echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc
+fi
+
+if [ -e $SNAKEGIT_HOME ]
+then
+ cd $SNAKEGIT_HOME
+ echo "Updating your SnakeGit install"
+ echo ""
+ git pull origin master >> $SNAKEGIT_HOME/install.log 2>&1
+ git submodule update >> $SNAKEGIT_HOME/install.log 2>&1
 else
-  echo "Installing SnakeGit"
-	echo ""
-	git clone https://github.com/NarrativeScience/snakegit.git $SNAKEGIT_HOME >> $SNAKEGIT_HOME/install.log 2>&1
-	cd $SNAKEGIT_HOME
-	git submodule init >> $SNAKEGIT_HOME/install.log 2>&1
-	git submodule update >> $SNAKEGIT_HOME/install.log 2>&1
+ echo "Installing SnakeGit"
+ echo ""
+ git clone https://github.com/NarrativeScience/snakegit.git $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
+ cd $SNAKEGIT_HOME
+ git submodule init >> $SNAKEGIT_HOME/install.log 2>&1
+ git submodule update >> $SNAKEGIT_HOME/install.log 2>&1
 fi
 
 # Configure PyPi username
@@ -96,10 +99,11 @@ current_username=`git config --global --get pypi.user`
 echo "Please enter your PyPi username: [$current_username]"
 read USERNAME
 
+echo "got username $USERNAME"
 if [ "$USERNAME" != "$current_username" ]
 then	
-	git config --global	--unset pypi.user
-	git config --global --add pypi.user $USERNAME
+ git config --global	--unset pypi.user
+ git config --global --add pypi.user $USERNAME
 fi
 
 # Install git aliases
@@ -108,42 +112,42 @@ echo ""
 git config --get alias.build > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.build "! /usr/bin/env bash $SNAKEGIT_HOME/bin/build.sh"
+ git config --global --add alias.build "! /usr/bin/env bash $SNAKEGIT_HOME/bin/build.sh"
 fi
 
 git config --get alias.upload-package > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.upload-package "! /usr/bin/env bash $SNAKEGIT_HOME/bin/upload.sh"
+ git config --global --add alias.upload-package "! /usr/bin/env bash $SNAKEGIT_HOME/bin/upload.sh"
 fi
 
 git config --get alias.test > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.test "! /usr/bin/env bash $SNAKEGIT_HOME/bin/test.sh"
+ git config --global --add alias.test "! /usr/bin/env bash $SNAKEGIT_HOME/bin/test.sh"
 fi
 
 git config --get alias.lint > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.lint "! /usr/bin/env bash $SNAKEGIT_HOME/bin/lint.sh"
+ git config --global --add alias.lint "! /usr/bin/env bash $SNAKEGIT_HOME/bin/lint.sh"
 fi
 
 git config --get alias.sdist > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.sdist "! /usr/bin/env bash $SNAKEGIT_HOME/bin/sdist.sh"
+ git config --global --add alias.sdist "! /usr/bin/env bash $SNAKEGIT_HOME/bin/sdist.sh"
 fi
 
 git config --get alias.dev-clean > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.dev-clean "! /usr/bin/env bash $SNAKEGIT_HOME/bin/clean.sh"
+ git config --global --add alias.dev-clean "! /usr/bin/env bash $SNAKEGIT_HOME/bin/clean.sh"
 fi
 
 git config --get alias.selfupdate > /dev/null
 if [ $? -ne 0 ]
 then
-	git config --global --add alias.selfupdate "! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate"
+ git config --global --add alias.selfupdate "! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate"
 fi
 
