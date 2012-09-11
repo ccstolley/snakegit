@@ -1,4 +1,4 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env sh 
 
 # Welcome message
 cat <<EOM
@@ -19,8 +19,7 @@ echo "Would you like to continue with installing [y] ?"
 
 read INSTALL
 
-if [ "$INSTALL" == "n" ] || [ "$INSTALL" == "N" ]
-then
+if [ "$INSTALL" = "n" ] || [ "$INSTALL" = "N" ]; then
  echo "Sorry to hear it"
  exit
 fi
@@ -31,9 +30,10 @@ fi
 
 unamestr=`uname`
 
-function configure_os_x {
+configure_os_x()
+{
  which brew > /dev/null
- if [[ $? -eq 0 ]]
+ if [[ $? == 0 ]]
  then
 	echo "Some bash features do not work nicely with OS X"
 	echo "To fix this, we can install Homebrew (http://mxcl.github.com/homebrew)"
@@ -45,7 +45,7 @@ function configure_os_x {
 	read INSTALL_BREW
 	if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
 	then
-	 ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
+	 ruby < `curl -fsSkL raw.github.com/mxcl/homebrew/go`
 	fi
  fi
  which brew > /dev/null
@@ -63,13 +63,13 @@ function configure_os_x {
  fi
 }
 
-if [ "$unamestr" == 'Darwin' ]
+if [ "$unamestr" = 'Darwin' ]
 then
  configure_os_x
 fi
 
 #Now that that is taken care of, install snakegit
-[ "${SNAKEGIT_HOME}xxx" == "xxx" ] &&  SNAKEGIT_HOME=${HOME}/.snakegit
+[ "${SNAKEGIT_HOME}xxx" = "xxx" ] &&  SNAKEGIT_HOME=${HOME}/.snakegit
 echo "Where do you want to install SnakeGit [$SNAKEGIT_HOME] ?"
 read LOCATION
 if [ "$LOCATION" != "" ]
@@ -77,7 +77,8 @@ then
  SNAKEGIT_HOME=$LOCATION
 fi
 RCFILE=${HOME}/.bashrc
-if [ "$unamestr" == "Darwin" ]
+if [ "$unamestr" = "Darwin" ]
+then
  RCFILE=${HOME}/.bash_profile
 fi
 
