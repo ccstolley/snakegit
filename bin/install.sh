@@ -32,28 +32,35 @@ fi
 unamestr=`uname`
 
 function configure_os_x {
-which brew
-if [[ $? -ne 0 ]]
-then
- echo "Some bash features do not work nicely with OS X"
- echo "To fix this, we can install Homebrew (http://mxcl.github.com/homebrew)"
- echo "Homebrew is a package manager similar to apt-get or yum"
- echo "It can make lots of tasks a lot easier, in addition to"
- echo "fixing the issues here."
- echo ""
- echo "Would you like to install brew now (recommended) [y] ?"
- read INSTALL_BREW
- if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
+ which brew > /dev/null
+ if [[ $? -eq 0 ]]
  then
-	ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
-	brew install gnu-getopt
-	echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bashrc
-	echo "To make sure that you pick up the changes made here"
-	echo "Please reload your ~/.bashrc file:"
-	echo ". ~/.bashrc"
+	echo "Some bash features do not work nicely with OS X"
+	echo "To fix this, we can install Homebrew (http://mxcl.github.com/homebrew)"
+	echo "Homebrew is a package manager similar to apt-get or yum"
+	echo "It can make lots of tasks a lot easier, in addition to"
+	echo "fixing the issues here."
+	echo ""
+	echo "Would you like to install brew now (recommended) [y] ?"
+	read INSTALL_BREW
+	if [ "$INSTALL_BREW" == "Y" ] || [ "$INSTALL_BREW" == "y" ] || [ "$INSTALL_BREW" == "" ]
+	then
+	 ruby <(curl -fsSkL raw.github.com/mxcl/homebrew/go)
+	fi
  fi
-fi
-
+ which brew > /dev/null
+ if [ $? -ne 0 ]
+ then
+	brew install gnu-getopt
+	grep FLAGS_GET_OPT_CMD ~/.bash_profile > /dev/null
+  if [ $? -ne 0 ]
+	then
+	 echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bash_profile
+	 echo "To make sure that you pick up the changes made here"
+	 echo "Please reload your ~/.bash_profile file:"
+	 echo ". ~/.bash_profile"
+	fi
+ fi
 }
 
 if [ "$unamestr" == 'Darwin' ]
@@ -69,13 +76,17 @@ if [ "$LOCATION" != "" ]
 then
  SNAKEGIT_HOME=$LOCATION
 fi
+RCFILE=${HOME}/.bashrc
+if [ "$unamestr" == "Darwin" ]
+ RCFILE=${HOME}/.bash_profile
+fi
 
-echo "Configuring SnakeGit home in ${HOME}/.profile"
+echo "Configuring SnakeGit home in $RCFILE"
 echo ""
-grep SNAKEGIT_HOME ~/.profile > /dev/null
+grep SNAKEGIT_HOME $RCFILE > /dev/null
 if [ $? -ne 0 ]
 then
- echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.profile
+ echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> $RCFILE
 fi
 
 if [ ! -e $SNAKEGIT_HOME ]
