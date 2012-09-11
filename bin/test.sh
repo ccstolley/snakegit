@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # Initialize variables
 test -v DEV_TOOLS_HOME || DEV_TOOLS_HOME=${HOME}/.snakegit
 test -v PIP_DOWNLOAD_CACHE || PIP_DOWNLOAD_CACHE=`pwd`/vendor/cache
@@ -10,15 +9,31 @@ test -v TEST_OUTPUT_DIR || TEST_OUTPUT_DIR=`pwd`/test_reports
 # run build
 $DEV_TOOLS_HOME/bin/build.sh
 
-ARGS=`getopt -o "xcpw:" -l "xunit,coverage,cover-package:,test-dir:" -- "$@"`
+function usage {
+	echo "test [options]"
+	echo ""
+	echo "-h|--help                    Show this message"
+	echo "-x|--xunit                   Generate an XUnit compatible report"
+	echo "-c|--coverage                Generate a test coverage report"
+	echo "-p|--cover-package=<pkg>     Which package should have coverage measured"
+	echo "-w|--test-dir=<dir>          Which directory holds the tests"
+}
+
+ARGS=`getopt -o hxcpw: -l help,xunit,coverage,cover-package:,test-dir: -- "$@"`
 
 test $? -eq 0 || exit 1
 
 eval set -- "$ARGS"
 
-while true;
+while [ $# -gt 0 ];
 do
 	case "$1" in
+		
+		-h|--help)
+			usage
+			exit 0
+			;;
+
 		-x|--xunit)
 			JUNIT_OPTS="--with-xunit --xunit-file=$TEST_OUTPUT_DIR/nosetests.xml"
 			shift;;
@@ -45,7 +60,17 @@ do
 		--)
 			shift
 			break;;
+
+		-*)
+			usage 1>&2
+			exit
+			;;
+		*)
+			usage 1>&2
+			exit
+			;;
 	esac
+	shift
 done
 
 # Build before running tests
