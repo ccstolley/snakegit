@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-test -f DEV_TOOLS_HOME  || DEV_TOOLS_HOME=${HOME}/.snakegit
-test -z $VIRTUALENV_DIR || VIRTUALENV_DIR=vendor/python
+[ "${DEV_TOOLS_HOME}xxx" == "xxx" ] && DEV_TOOLS_HOME=${HOME}/.snakegit
+[ "${VIRTUALENV_DIR}xxx" == "xxx" ] && VIRTUALENV_DIR=vendor/python
 
 rm -rf $VIRTUALENV_DIR
 rm -rf build dist

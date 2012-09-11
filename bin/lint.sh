@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-test -z $SNAKEGIT_HOME || SNAKEGIT_HOME=${HOME}/.snakegit
+[ "${SNAKEGIT_HOME}xxx" == "xxx" ]  && SNAKEGIT_HOME=${HOME}/.snakegit
 
-test -z $VIRTUALENV_DIR || VIRTUALENV_DIR=./vendor/python
+[ "${VIRTUALENV_DIR}xxx" == "xxx" ] && VIRTUALENV_DIR=./vendor/python
 
 $VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pylint
 $VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pep8
@@ -62,7 +62,7 @@ do
 done
 
 function require_src {
-  if [ ! -z $SRC_DIR ]
+  if [ "${SRC_DIR}xxx" == "xxx" ]
   then
     echo "You must supply a source package with -s"
     exit 1
@@ -70,7 +70,7 @@ function require_src {
 }
 
 function require_module {
-  if [ ! -z $MODULE ]
+  if [ "${MODULE}xxx" == "xxx" ]
   then
     echo "You must supply a module to lint with -m"
     exit 1
@@ -79,24 +79,23 @@ function require_module {
 
 $VIRTUALENV_DIR/bin/python setup.py install
 
-test -z $TEST_OUTPUT_DIR || TEST_OUTPUT_DIR=test_results
+[ "${TEST_OUTPUT_DIR}xxx" == "xxx" ] && TEST_OUTPUT_DIR=test_results
 
 mkdir -p $TEST_OUTPUT_DIR
-
 
 if [ -z $PYLINT ]
 then
   require_module
-  test -z $MODULE ||$VIRTUALENV_DIR/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
+  [ "${MODULE}xxx" == "xxx" ] && $VIRTUALENV_DIR/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
 fi
 
-if [ -z $PEP8 ] 
+if [ "${PEP8}xxx" == "xxx" ] 
 then
   require_src
   $VIRTUALENV_DIR/bin/pep8 --format=pylint $SRC_DIR | tee $TEST_OUTPUT_DIR/pep8.txt
 fi
 
-if [ -z $PYFLAKES ]
+if [ "${PYFLAKES}xxx" == "xxx" ]
 then
   require_src
   $VIRTUALENV_DIR/bin/pyflakes $SRC_DIR | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}' | tee $TEST_OUTPUT_DIR/pyflakes.txt 

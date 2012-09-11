@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-test -z $NS_DEV_UTILS || NS_DEV_UTILS=~/.snakegit
+[ "${NS_DEV_UTILS}xxx" == "xxx" ] && NS_DEV_UTILS=~/.snakegit
 
 echo "Uploading file"
 FILE_TO_UPLOAD=`ls -rt dist/|tail -1`

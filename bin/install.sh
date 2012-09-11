@@ -56,13 +56,13 @@ fi
 
 }
 
-if [[ "$unamestr" == 'Darwin' ]]
+if [ "$unamestr" == 'Darwin' ]
 then
 	configure_os_x
 fi
 
 #Now that that is taken care of, install snakegit
-test -z $SNAKEGIT_HOME || SNAKEGIT_HOME=${HOME}/.snakegit
+[ "${SNAKEGIT_HOME}xxx" == "xxx" ] &&  SNAKEGIT_HOME=${HOME}/.snakegit
 echo "Where do you want to install SnakeGit [$SNAKEGIT_HOME] ?"
 read LOCATION
 if [ "$LOCATION" != "" ]
@@ -73,7 +73,7 @@ fi
 echo "Configuring SnakeGit home in ${HOME}/.bashrc"
 echo ""
 grep SNAKEGIT_HOME ~/.bashrc
-test $? -eq 0 || echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc
+test $? -ne 0 || echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.bashrc 
 
 if [ -d $SNAKEGIT_HOME ]
 then
@@ -95,13 +95,11 @@ fi
 current_username=`git config --global --get pypi.user`
 echo "Please enter your PyPi username: [$current_username]"
 read USERNAME
-if [ -z $current_username ]
-then
-	if [ ! "$USERNAME" == '' ] && [ "$USERNAME" != "$current_username" ]
-	then	
-			git config --global	--unset pypi.user
-			git config --global --add pypi.user $USERNAME
-	fi
+
+if [ "$USERNAME" != "$current_username" ]
+then	
+	git config --global	--unset pypi.user
+	git config --global --add pypi.user $USERNAME
 fi
 
 # Install git aliases
