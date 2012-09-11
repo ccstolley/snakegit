@@ -10,3 +10,6 @@
 [submodule "var/submodules/pep8"]
 	path = var/submodules/pep8
 	url = git://github.com/jcrocholl/pep8.git
+[submodule "var/submodules/virtualenv"]
+	path = var/submodules/virtualenv
+	url = https://github.com/pypa/virtualenv.git
