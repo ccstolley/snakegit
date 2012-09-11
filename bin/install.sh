@@ -148,6 +148,6 @@ fi
 git config --get alias.selfupdate > /dev/null
 if [ $? -ne 0 ]
 then
- git config --global --add alias.selfupdate "! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate"
+ git config --global --add alias.selfupdate "! /usr/bin/env bash $SNAKEGIT_HOME/bin/selfupdate.sh"
 fi
 
