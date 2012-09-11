@@ -78,14 +78,8 @@ then
  echo "export SNAKEGIT_HOME=$SNAKEGIT_HOME" >> ${HOME}/.profile
 fi
 
-if [ -e $SNAKEGIT_HOME ]
+if [ ! -e $SNAKEGIT_HOME ]
 then
- cd $SNAKEGIT_HOME
- echo "Updating your SnakeGit install"
- echo ""
- git pull origin master >> $SNAKEGIT_HOME/install.log 2>&1
- git submodule update >> $SNAKEGIT_HOME/install.log 2>&1
-else
  echo "Installing SnakeGit"
  echo ""
  git clone https://github.com/NarrativeScience/snakegit.git $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
