@@ -62,3 +62,9 @@ then
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
 
+GEARBOX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/gearbox.sh"
+OLD_GEARBOX=`git config --get alias.gearbox`
+if [ "$GEARBOX" != "$OLD_GEARBOX" ]
+then
+  git config --global --replace-all alias.gearbox "$OLD_GEARBOX"
+ fi
