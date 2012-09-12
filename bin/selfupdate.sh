@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 echo "Checking for updates"
-[ "xxx${SNAKEGIT_HOME}" == "xxx" ] && SNAKEGIT_HOME=${HOME}/.snakegit
+[ "xxx${SNAKEGIT_HOME}" = "xxx" ] && SNAKEGIT_HOME=${HOME}/.snakegit
 
 cd $SNAKEGIT_HOME
 
@@ -13,7 +13,7 @@ echo "Configuring your github account"
 echo ""
 
 
-function register_github {
+register_github() {
   FORMATTED_AUTH=`curl -u $1 -d '{"scopes": ["repo","gist"], "note": "SnakeGit tools"}' https://api.github.com/authorizations`
   echo $FORMATTED_AUTH | grep message > /dev/null
   if [ $? -eq 0 ]
@@ -31,7 +31,7 @@ function register_github {
   git config --global --replace-all github.user $1
 }
 
-function unregister_github {
+unregister_github() {
   curl -X DELETE -u $1 $AUTH_URL >> $SNAKEGIT_HOME/install.log 2>&1 
 }
 
@@ -41,7 +41,7 @@ then
   echo "You already have github configured in your ~/.gitconfig"
   echo ""
   read -p "Do you want to reregister your account [n]? " REGISTER
-  if [ "$REGISTER" == "y" ] || [ "$REGISTER" == "Y" ]
+  if [ "$REGISTER" = "y" ] || [ "$REGISTER" = "Y" ]
   then
     USER=`git config --get github.user`
     #unregister_github $USER
