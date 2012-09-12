@@ -52,3 +52,13 @@ else
   register_github $USER
 fi
 
+echo "Install and Configure the root virtualenv."
+echo "This will be used to generate other virtualenv's"
+echo "and to hold common tools, e.g. nose."
+# Install and Configure virtualenv
+if [ ! -f $SNAKEGIT_HOME/bin/python ] 
+then
+ /usr/bin/env python $SNAKEGIT_HOME/var/submodules/virtualenv/virtualenv.py --distribute $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
+ $SNAKEGIT_HOME/bin/pip install virtualenv
+fi
+
