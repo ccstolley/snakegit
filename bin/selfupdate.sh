@@ -68,3 +68,10 @@ if [ "$GEARBOX" != "$OLD_GEARBOX" ]
 then
   git config --global --replace-all alias.gearbox "$GEARBOX"
  fi
+
+SNAKEUPDATE="! /usr/bin/env sh /home/trhowe/.snakegit/bin/selfupdate.sh"
+OLD_SNAKEUPDATE=`git config --get alias.snakeupdate`
+if [ "$SNAKEUPDATE" != "$OLD_SNAKEUPDATE" ]
+then
+  git config --global --replace-all alias.snakeupdate "$SNAKEUPDATE"
+ fi
