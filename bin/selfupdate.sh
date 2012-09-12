@@ -59,6 +59,6 @@ echo "and to hold common tools, e.g. nose."
 if [ ! -f $SNAKEGIT_HOME/bin/python ] 
 then
  /usr/bin/env python $SNAKEGIT_HOME/var/submodules/virtualenv/virtualenv.py --distribute $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
- $SNAKEGIT_HOME/bin/pip install virtualenv
+ $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
 
