@@ -7,7 +7,14 @@
 /usr/bin/env bash $DEV_TOOLS_HOME/bin/virtualenv.sh
 
 echo "Installing libraries"
+
+# Acquire a temporary token so that you don't have to enter your password
+# over and over again
+tmp_token=`curl -k -u $(git config --get pypi.user) $(git config --get pypi.scheme)://$(git config --get pypi.host)/token`
+uid_key=`python -c "import json ; result = json.loads('$tmp_token') ; print '{0};{1}'.format(result['uid'], result['key'])"`
+echo $uid_key | cut -d';' -f1 | read uid
+echo $uid_key | cut -d';' -f2 | read key
 PIP_DOWNLOAD_CACHE=$PIP_DOWNLOAD_CACHE $VIRTUALENV_DIR/bin/pip install \
-	--no-deps --extra-index-url `git config --get pypi.scheme`://`git config --get pypi.user`@`git config --get pypi.host`/simple/ \
+	--no-deps --extra-index-url `git config --get pypi.scheme`://$uid:$key@`git config --get pypi.host`/simple/ \
 	-r requirements.txt > /dev/null
 
