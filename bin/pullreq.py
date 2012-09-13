@@ -11,6 +11,7 @@ import urllib2
 
 BASE_URL = 'https://api.github.com'
 ORIGIN_LINE_START = 'Push  URL:'
+ORGANIZATION = 'NarrativeScience'
 
 
 def get_token():
@@ -63,61 +64,112 @@ def create_pull_request(title, body, base, recips):
         print 'detached head'
         sys.exit(-1)
     else:
-        token = get_token()
         user, repo = get_repo_and_user()
-        body = body + '\n' + '\n'.join(recips)
+        body = body + '\n' + ' '.join('@' + recip for recip in recips)
         head = get_branch()
         args = {'title': title,
                 'body': body,
                 'head': head,
                 'base': base}
-        headers = {'Authorization': 'token %s' % token}
         url = BASE_URL + '/repos/%s/%s/pulls' % (user, repo)
-        req = urllib2.Request(url=url, data=json.dumps(args), headers=headers)
         try:
-            response = urllib2.urlopen(req)
+            response = make_github_request(url=url, data=json.dumps(args))
             return response.read()
         except urllib2.HTTPError as response:
             print response.read()
             sys.exit(-1)
 
 
-def get_args():
+def make_github_request(*args, **kwargs):
+    """Send an authorization token in a github api request."""
+    token = get_token()
+    kwargs.setdefault('headers', {}).update(
+            {'Authorization': 'token %s' % token})
+    req = urllib2.Request(*args, **kwargs)
+    return urllib2.urlopen(req)
+
+
+def get_args(organization, members):
     """Parse cmdline args."""
     parser = argparse.ArgumentParser(description='Make a pull request.')
-    parser.add_argument('--title', dest='title', required=True)
-    parser.add_argument('--body', dest='body', required=True)
     parser.add_argument(
-            '--base', dest='base', default='master', required=False)
+            '--title',
+            dest='title',
+            required=True,
+            help='pull request title')
+    parser.add_argument(
+            '--body',
+            dest='body',
+            required=True,
+            help='pull request description')
+    parser.add_argument(
+            '--base',
+            dest='base',
+            default='master',
+            required=False,
+            help='branch to create the pull request against')
     parser.add_argument(
             '--no-push',
             dest='push',
             default=True,
             action='store_false',
-            required=False)
+            required=False,
+            help='do not perform a push before creating the pull request')
 
+    class ListMembers(argparse.Action):
+        """List members of the organization and exit"""
+        def __call__(*args, **kwargs):
+            """List members of the organization and exit"""
+            print '\n'.join(members)
+            sys.exit(0)
+
+    parser.add_argument(
+            '--list-members',
+            dest='get_members',
+            default=False,
+            nargs=0,
+            required=False,
+            action=ListMembers,
+            help=('list members of the organization %s and exit' %
+                organization))
+
+    members_dict = {member: None for member in members}
     def parse_recips(arg):
         """Parse the list of recipients."""
         recips = arg.split(',')
         clean_recips = []
         for recip in recips:
             recip = recip.strip()
-            if not recip.startswith('@'):
-                recip = '@' + recip
+            if recip not in members_dict:
+                raise argparse.ArgumentTypeError(
+                        '%s is not a member of %s' % (recip, organization))
             clean_recips.append(recip)
         return clean_recips
 
-    parser.add_argument('--to', dest='recips', type=parse_recips, required=True)
+    parser.add_argument(
+            '--to',
+            dest='recips',
+            type=parse_recips,
+            required=True,
+            help='comma-seperated list of pull request recipients')
 
     return parser.parse_args()
 
 
+def get_members(org):
+    """Return the list of member in organization @org."""
+    url = BASE_URL + '/orgs/%s/members' % org
+    response = make_github_request(url)
+    members = json.loads(response.read())
+    return [member['login'] for member in members]
+
+
 def main():
     """Parse the args and create a pull request."""
-    args = get_args()
+    members = get_members(ORGANIZATION)
+    args = get_args(ORGANIZATION, members)
     if args.push:
         push_branch()
-
     create_pull_request(args.title, args.body, args.base, args.recips)
 
 if __name__ == '__main__':
