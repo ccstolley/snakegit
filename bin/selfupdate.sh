@@ -30,14 +30,11 @@ for alias in $aliases
 do
  KEY=$(echo $alias | cut -d: -f1 )
  COMMAND=$(echo $alias | cut -d: -f2 )
- OLD_COMMAND=`git config --get $KEY`
- if [ "$OLD_COMMAND" != "$COMMAND" ]
+ OLD_COb [ "$OLD_COMMAND" != "$COMMAND" ]
  then
-	git config --global --replace-all $KEY "! ${SNAKEGIT_HOME}/bin/$COMMAND"
+	git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
  fi
 done
-
-chmod +x ${SNAKEGIT_HOME}/bin/*
 
 
 echo "Configuring your github account"
@@ -71,8 +68,7 @@ if [ $? -eq 0 ]
 then
   echo "You already have github configured in your ~/.gitconfig"
   echo ""
-  echo "Do you want to reregister your account [n]? "
-  read REGISTER
+  read -p "Do you want to reregister your account [n]? " REGISTER
   if [ "$REGISTER" = "y" ] || [ "$REGISTER" = "Y" ]
   then
     USER=`git config --get github.user`
@@ -80,9 +76,8 @@ then
     register_github $USER
   fi
 else
- echo "Github Username: "
- read USER
- register_github $USER
+  read -p "Github Username: " USER
+  register_github $USER
 fi
 
 # Install and Configure virtualenv
@@ -94,3 +89,24 @@ then
  /usr/bin/env python $SNAKEGIT_HOME/var/submodules/virtualenv/virtualenv.py --distribute $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
+
+GEARBOX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/gearbox.sh"
+OLD_GEARBOX=`git config --get alias.gearbox`
+if [ "$GEARBOX" != "$OLD_GEARBOX" ]
+then
+  git config --global --replace-all alias.gearbox "$GEARBOX"
+ fi
+
+SNAKEUPDATE="! /usr/bin/env sh $SNAKEGIT_HOME/bin/selfupdate.sh"
+OLD_SNAKEUPDATE=`git config --get alias.snakeupdate`
+if [ "$SNAKEUPDATE" != "$OLD_SNAKEUPDATE" ]
+then
+  git config --global --replace-all alias.snakeupdate "$SNAKEUPDATE"
+ fi
+
+PULLREQ="! /usr/bin/env python $SNAKEGIT_HOME/bin/pullreq.py"
+OLD_PULLREQ=`git config --get alias.pullreq`
+if [ "$PULLREQ" != "$OLD_PULLREQ" ]
+then
+  git config --global --replace-all alias.pullreq "$PULLREQ"
+ fi
