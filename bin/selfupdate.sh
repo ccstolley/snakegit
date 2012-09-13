@@ -110,3 +110,13 @@ if [ "$PULLREQ" != "$OLD_PULLREQ" ]
 then
   git config --global --replace-all alias.pullreq "$PULLREQ"
  fi
+
+# Install sphinx
+PIP_DOWNLOAD_CACHE=${SNAKEGIT_HOME}/var/cache ${SNAKEGIT_HOME}/bin/pip install sphinx
+
+SPHINX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/sphinx.sh"
+OLD_SPHINX=`git config --get alias.sphinx`
+if [ "$SPHINX" != "$OLD_SPHINX" ]
+then
+ git config --global --replace-all alias.sphinx "$SPHINX"
+fi
