@@ -91,7 +91,7 @@ then
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
 
-pip install --no-deps -r $SNAKEGIT_HOME/requirements.txt
+pip install --no-deps -r $SNAKEGIT_HOME/requirements.txt >> $SNAKEGIT_HOME/install.log
 
 # configure aliases
 aliases=$(cat ${SNAKEGIT_HOME}/aliases.txt)
@@ -102,6 +102,6 @@ do
  OLD_COMMAND=`git config --get $KEY`
  if [ "$OLD_COMMAND" != "$COMMAND" ]
  then
-       git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
+       git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND" 
  fi
 done
