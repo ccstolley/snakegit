@@ -3,9 +3,6 @@
 
 [ "${VIRTUALENV_DIR}xxx" = "xxx" ] && VIRTUALENV_DIR=./vendor/python
 
-$VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pylint
-$VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pep8
-$VIRTUALENV_DIR/bin/pip install $SNAKEGIT_HOME/var/submodules/pyflakes
 
 usage()
 {
@@ -52,7 +49,7 @@ do
      ;;
   esac
 done
-echo "Done arg parsing"
+
 require_src()
 {
   if [ "${SRC_DIR}xxx" = "xxx" ]
@@ -71,26 +68,26 @@ require_module()
   fi
 }
 
-$VIRTUALENV_DIR/bin/python setup.py install
-
 [ "${TEST_OUTPUT_DIR}xxx" = "xxx" ] && TEST_OUTPUT_DIR=test_results
 
 mkdir -p $TEST_OUTPUT_DIR
 
+export PYTHONPATH=src:.:$VIRTUALENV_DIR/lib/python2.6/site-packages:$VIRTUALENV_DIR/lib/python2.7/site-packages
+
 if [ "${PYLINT}xxx" != "xxx" ]
 then
   require_module
-  $VIRTUALENV_DIR/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
+  $SNAKEGIT_HOME/bin/pylint -f parseable $MODULE | tee $TEST_OUTPUT_DIR/pylint.txt 
 fi
 
 if [ "${PEP8}xxx" != "xxx" ] 
 then
   require_src
-  $VIRTUALENV_DIR/bin/pep8 --format=pylint $SRC_DIR | tee $TEST_OUTPUT_DIR/pep8.txt
+  $SNAKEGIT_HOME/bin/pep8 --format=pylint $SRC_DIR | tee $TEST_OUTPUT_DIR/pep8.txt
 fi
 
 if [ "${PYFLAKES}xxx" != "xxx" ]
 then
   require_src
-  $VIRTUALENV_DIR/bin/pyflakes $SRC_DIR | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}' | tee $TEST_OUTPUT_DIR/pyflakes.txt 
+  $SNAKEGIT_HOME/bin/pyflakes $SRC_DIR | awk -F\: '{printf "%s:%s: [E]%s\n", $1, $2, $3}' | tee $TEST_OUTPUT_DIR/pyflakes.txt 
 fi
