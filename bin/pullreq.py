@@ -112,6 +112,7 @@ def get_args():
 
 
 def main():
+    """Parse the args and create a pull request."""
     args = get_args()
     if args.push:
         push_branch()
