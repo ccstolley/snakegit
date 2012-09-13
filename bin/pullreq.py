@@ -52,6 +52,8 @@ def get_repo_and_user():
         if line.startswith(ORIGIN_LINE_START):
             origin_line = line[len(ORIGIN_LINE_START):].strip()
             _, user_name_repo = origin_line.split(':')
+            while user_name_repo.startswith('/'):
+                user_name_repo = user_name_repo[-1:]
             user_name, repo = user_name_repo.split('/')
             repo = repo.replace('.git', '')
             return user_name, repo
