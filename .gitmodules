@@ -13,3 +13,9 @@
 [submodule "var/submodules/virtualenv"]
 	path = var/submodules/virtualenv
 	url = https://github.com/pypa/virtualenv.git
+[submodule "var/submodules/PyGithub"]
+	path = var/submodules/PyGithub
+	url = git://github.com/jacquev6/PyGithub.git
+[submodule "var/submodules/GitPython"]
+	path = var/submodules/GitPython
+	url = git://github.com/gitpython-developers/GitPython.git
