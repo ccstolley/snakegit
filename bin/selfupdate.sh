@@ -103,6 +103,6 @@ do
  OLD_COMMAND=`git config --get $KEY`
  if [ "$OLD_COMMAND" != "$COMMAND" ]
  then
-       git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND" 
+       git config --global --replace-all $KEY "! ${SNAKEGIT_HOME}/bin/$COMMAND" 
  fi
 done
