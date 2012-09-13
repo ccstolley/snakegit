@@ -4,9 +4,9 @@
 
 import argparse
 import json
-import requests
 import subprocess
 import sys
+import urllib2
 
 
 BASE_URL = 'https://api.github.com'
@@ -73,11 +73,12 @@ def create_pull_request(title, body, base, recips):
                 'base': base}
         headers = {'Authorization': 'token %s' % token}
         url = BASE_URL + '/repos/%s/%s/pulls' % (user, repo)
-        response = requests.post(url, data=json.dumps(args), headers=headers)
-        if response.status_code == 200:
-            return response.text
-        else:
-            print response.text
+        req = urllib2.Request(url=url, data=json.dumps(args), headers=headers)
+        try:
+            response = urllib2.urlopen(req)
+            return response.read()
+        except urllib2.HTTPError as response:
+            print response.read()
             sys.exit(-1)
 
 
