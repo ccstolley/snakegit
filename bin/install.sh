@@ -51,10 +51,10 @@ configure_os_x()
  if [ $? -ne 0 ]
  then
 	brew install gnu-getopt
-	grep FLAGS_GET_OPT_CMD ~/.bash_profile > /dev/null
+	grep FLAGS_GET_OPT_CMD ~/.profile > /dev/null
   if [ $? -ne 0 ]
 	then
-	 echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bash_profile
+	 echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.profile
 	 echo "To make sure that you pick up the changes made here"
 	 echo "Please reload your ~/.bash_profile file:"
 	 echo ". ~/.bash_profile"
@@ -75,11 +75,7 @@ if [ "$LOCATION" != "" ]
 then
  SNAKEGIT_HOME=$LOCATION
 fi
-RCFILE=${HOME}/.bashrc
-if [ "$unamestr" = "Darwin" ]
-then
- RCFILE=${HOME}/.bash_profile
-fi
+RCFILE=${HOME}/.profile
 
 echo "Configuring SnakeGit home in $RCFILE"
 echo ""
