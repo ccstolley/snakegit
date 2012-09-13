@@ -89,7 +89,11 @@ def get_args():
     parser.add_argument(
             '--base', dest='base', default='master', required=False)
     parser.add_argument(
-            '--no-push', dest='push', default=True, type=bool, required=False)
+            '--no-push',
+            dest='push',
+            default=True,
+            action='store_false',
+            required=False)
 
     def parse_recips(arg):
         """Parse the list of recipients."""
