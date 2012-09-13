@@ -1,3 +1,4 @@
+#!/bin/sh
 # Welcome message
 cat <<EOM
  ____              _         ____ _ _
