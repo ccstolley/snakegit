@@ -30,8 +30,7 @@ for alias in $aliases
 do
  KEY=$(echo $alias | cut -d: -f1 )
  COMMAND=$(echo $alias | cut -d: -f2 )
- if [ "$OLD_COMMAND" != "$COMMAND" ]
- then
+ if [ "$OLD_COMMAND" != "$COMMAND" ] ;  then
 	git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
  fi
 done
