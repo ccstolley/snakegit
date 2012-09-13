@@ -34,10 +34,11 @@ do
  KEY=$(echo $alias | cut -d: -f1 )
  COMMAND=$(echo $alias | cut -d: -f2 )
  if [ "$OLD_COMMAND" != "$COMMAND" ] ;  then
-	git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
+	git config --global --replace-all $KEY "! ${SNAKEGIT_HOME}/bin/$COMMAND"
  fi
 done
 
+chmod +x ${SNAKEGIT_HOME}/bin*
 
 echo "Configuring your github account"
 echo ""
