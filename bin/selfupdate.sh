@@ -75,3 +75,10 @@ if [ "$SNAKEUPDATE" != "$OLD_SNAKEUPDATE" ]
 then
   git config --global --replace-all alias.snakeupdate "$SNAKEUPDATE"
  fi
+
+PULLREQ="! /usr/bin/env python $SNAKEGIT_HOME/bin/pullreq.py"
+OLD_PULLREQ=`git config --get alias.pullreq`
+if [ "$PULLREQ" != "$OLD_PULLREQ" ]
+then
+  git config --global --replace-all alias.pullreq "$PULLREQ"
+ fi
