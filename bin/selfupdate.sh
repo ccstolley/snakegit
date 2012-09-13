@@ -9,6 +9,9 @@ git pull origin master >> $SNAKEGIT_HOME/install.log
 git submodule init >> $SNAKEGIT_HOME/install.log
 git submodule update >> $SNAKEGIT_HOME/install.log
 
+export PATH=$SNAKEGIT_HOME/bin:$PATH
+export PIP_DOWNLOAD_CACHE=${SNAKEGIT_HOME}/var/cache
+
 # Configure PyPi username
 current_username=`git config --global --get pypi.user`
 echo "Please enter your PyPi username: [$current_username]"
@@ -38,7 +41,6 @@ done
 
 echo "Configuring your github account"
 echo ""
-
 
 register_github() {
   FORMATTED_AUTH=`curl -u $1 -d '{"scopes": ["repo","gist"], "note": "SnakeGit tools"}' https://api.github.com/authorizations`
@@ -108,10 +110,29 @@ OLD_PULLREQ=`git config --get alias.pullreq`
 if [ "$PULLREQ" != "$OLD_PULLREQ" ]
 then
   git config --global --replace-all alias.pullreq "$PULLREQ"
- fi
+fi
+
+# Install github python lib
+pip freeze | grep -q PyGithub || pip install $SNAKEGIT_HOME/var/submodules/PyGithub
+
+# Install gitpython
+pip freeze | grep -q -i gitpython || pip install $SNAKEGIT_HOME/var/submodules/GitPython
 
 # Install sphinx
-PIP_DOWNLOAD_CACHE=${SNAKEGIT_HOME}/var/cache ${SNAKEGIT_HOME}/bin/pip install sphinx
+echo "Setting up Sphinx environment"
+pip freeze | grep -q Sphinx   || pip install sphinx
+
+# Install nose
+echo "Setting up test environment"
+pip freeze | grep -q nose     || pip install $SNAKEGIT_HOME/var/submodules/nose
+pip freeze | grep -q coverage || pip install coverage 
+pip freeze | grep -q pylint   || pip install $SNAKEGIT_HOME/var/submodules/pylint
+pip freeze | grep -q pep8     || pip install $SNAKEGIT_HOME/var/submodules/pep8
+pip freeze | grep -q pyflakes || pip install $SNAKEGIT_HOME/var/submodules/pyflakes
+
+# Install boto
+echo "Setting up boto"
+pip freeze | grep -q boto     || pip install boto 
 
 SPHINX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/sphinx.sh"
 OLD_SPHINX=`git config --get alias.sphinx`
