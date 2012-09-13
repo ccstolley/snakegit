@@ -91,52 +91,17 @@ then
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
 
-GEARBOX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/gearbox.sh"
-OLD_GEARBOX=`git config --get alias.gearbox`
-if [ "$GEARBOX" != "$OLD_GEARBOX" ]
-then
-  git config --global --replace-all alias.gearbox "$GEARBOX"
+pip install --no-deps -r $SNAKEGIT_HOME/requirements.txt
+
+# configure aliases
+aliases=$(cat ${SNAKEGIT_HOME}/aliases.txt)
+for alias in $aliases 
+do
+ KEY=$(echo $alias | cut -d: -f1 )
+ COMMAND=$(echo $alias | cut -d: -f2 )
+ OLD_COMMAND=`git config --get $KEY`
+ if [ "$OLD_COMMAND" != "$COMMAND" ]
+ then
+       git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
  fi
-
-SNAKEUPDATE="! /usr/bin/env sh $SNAKEGIT_HOME/bin/selfupdate.sh"
-OLD_SNAKEUPDATE=`git config --get alias.snakeupdate`
-if [ "$SNAKEUPDATE" != "$OLD_SNAKEUPDATE" ]
-then
-  git config --global --replace-all alias.snakeupdate "$SNAKEUPDATE"
- fi
-
-PULLREQ="! /usr/bin/env python $SNAKEGIT_HOME/bin/pullreq.py"
-OLD_PULLREQ=`git config --get alias.pullreq`
-if [ "$PULLREQ" != "$OLD_PULLREQ" ]
-then
-  git config --global --replace-all alias.pullreq "$PULLREQ"
-fi
-
-# Install github python lib
-pip freeze | grep -q PyGithub || pip install $SNAKEGIT_HOME/var/submodules/PyGithub
-
-# Install gitpython
-pip freeze | grep -q -i gitpython || pip install $SNAKEGIT_HOME/var/submodules/GitPython
-
-# Install sphinx
-echo "Setting up Sphinx environment"
-pip freeze | grep -q Sphinx   || pip install sphinx
-
-# Install nose
-echo "Setting up test environment"
-pip freeze | grep -q nose     || pip install $SNAKEGIT_HOME/var/submodules/nose
-pip freeze | grep -q coverage || pip install coverage 
-pip freeze | grep -q pylint   || pip install $SNAKEGIT_HOME/var/submodules/pylint
-pip freeze | grep -q pep8     || pip install $SNAKEGIT_HOME/var/submodules/pep8
-pip freeze | grep -q pyflakes || pip install $SNAKEGIT_HOME/var/submodules/pyflakes
-
-# Install boto
-echo "Setting up boto"
-pip freeze | grep -q boto     || pip install boto 
-
-SPHINX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/sphinx.sh"
-OLD_SPHINX=`git config --get alias.sphinx`
-if [ "$SPHINX" != "$OLD_SPHINX" ]
-then
- git config --global --replace-all alias.sphinx "$SPHINX"
-fi
+done
