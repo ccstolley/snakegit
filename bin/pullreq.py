@@ -3,6 +3,7 @@
 
 
 import argparse
+import json
 import requests
 import subprocess
 import sys
@@ -36,7 +37,7 @@ def get_branch():
 def push_branch():
     """Push the given branch."""
     branch = get_branch()
-    subprocess.Popen("git push origin %s" % branch, shell=True)
+    subprocess.Popen("git push origin %s" % branch, shell=True).wait()
 
 
 def get_repo_and_user():
@@ -65,16 +66,19 @@ def create_pull_request(title, body, base, recips):
         token = get_token()
         user, repo = get_repo_and_user()
         body = body + '\n' + '\n'.join(recips)
-        head = 'origin/' + get_branch()
+        head = get_branch()
         args = {'title': title,
                 'body': body,
                 'head': head,
                 'base': base}
         headers = {'Authorization': 'token %s' % token}
         url = BASE_URL + '/repos/%s/%s/pulls' % (user, repo)
-        response = requests.post(url, data=args, headers=headers)
+        response = requests.post(url, data=json.dumps(args), headers=headers)
         if response.status_code == 200:
             return response.text
+        else:
+            print response.text
+            sys.exit(-1)
 
 
 def get_args():
@@ -108,7 +112,7 @@ def main():
     if args.push:
         push_branch()
 
-    print create_pull_request(args.title, args.body, args.base, args.recips)
+    create_pull_request(args.title, args.body, args.base, args.recips)
 
 if __name__ == '__main__':
     main()
