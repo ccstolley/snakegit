@@ -9,6 +9,35 @@ git pull origin master >> $SNAKEGIT_HOME/install.log
 git submodule init >> $SNAKEGIT_HOME/install.log
 git submodule update >> $SNAKEGIT_HOME/install.log
 
+# Configure PyPi username
+current_username=`git config --global --get pypi.user`
+echo "Please enter your PyPi username: [$current_username]"
+read USERNAME
+
+if [ "xxx${USERNAME}" != "xxx" ] && [ "$USERNAME" != "$current_username" ]
+then	
+ git config --global --replace-all pypi.user $USERNAME
+ git config --global --replace-all pypi.host repo.n-s.us
+ git config --global --replace-all pypi.scheme https
+fi
+
+# Install git aliases
+echo "Now installing git aliases"
+echo ""
+
+aliases=$(cat ${SNAKEGIT_HOME}/aliases.txt)
+for alias in $aliases 
+do
+ KEY=$(echo $alias | cut -d: -f1 )
+ COMMAND=$(echo $alias | cut -d: -f2 )
+ OLD_COMMAND=`git config --get $KEY`
+ if [ "$OLD_COMMAND" != "$COMMAND" ]
+ then
+	git config --global --replace-all $KEY "!/usr/bin/env sh ${SNAKEGIT_HOME}/bin/$COMMAND"
+ fi
+done
+
+
 echo "Configuring your github account"
 echo ""
 
@@ -61,24 +90,3 @@ then
  /usr/bin/env python $SNAKEGIT_HOME/var/submodules/virtualenv/virtualenv.py --distribute $SNAKEGIT_HOME >> /tmp/snakegit_install.log 2>&1
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
-
-GEARBOX="! /usr/bin/env sh $SNAKEGIT_HOME/bin/gearbox.sh"
-OLD_GEARBOX=`git config --get alias.gearbox`
-if [ "$GEARBOX" != "$OLD_GEARBOX" ]
-then
-  git config --global --replace-all alias.gearbox "$GEARBOX"
- fi
-
-SNAKEUPDATE="! /usr/bin/env sh $SNAKEGIT_HOME/bin/selfupdate.sh"
-OLD_SNAKEUPDATE=`git config --get alias.snakeupdate`
-if [ "$SNAKEUPDATE" != "$OLD_SNAKEUPDATE" ]
-then
-  git config --global --replace-all alias.snakeupdate "$SNAKEUPDATE"
- fi
-
-PULLREQ="! /usr/bin/env python $SNAKEGIT_HOME/bin/pullreq.py"
-OLD_PULLREQ=`git config --get alias.pullreq`
-if [ "$PULLREQ" != "$OLD_PULLREQ" ]
-then
-  git config --global --replace-all alias.pullreq "$PULLREQ"
- fi
