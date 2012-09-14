@@ -92,7 +92,7 @@ then
  $SNAKEGIT_HOME/bin/pip install $SNAKEGIT_HOME/var/submodules/virtualenv
 fi
 
-$SNAKEGIT_HOME/pip install --no-deps -r $SNAKEGIT_HOME/requirements.txt >> $SNAKEGIT_HOME/install.log
+$SNAKEGIT_HOME/bin/pip install --no-deps -r $SNAKEGIT_HOME/requirements.txt >> $SNAKEGIT_HOME/install.log
 
 # configure aliases
 aliases=$(cat ${SNAKEGIT_HOME}/aliases.txt)
