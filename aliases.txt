@@ -1,9 +1,11 @@
 alias.build:build.sh
-alias.upload-package:upload.sh
-alias.test:test.sh
-alias.lint:lint.sh
-alias.sdist:sdist.sh
 alias.dev-clean:clean.sh
-alias.snakeupdate:selfupdate.sh
-alias.pullreq:pullreq.py
 alias.gearbox:gearbox.sh
+alias.lint:lint.sh
+alias.pullreq:pullreq.py
+alias.upload-package:upload.sh
+alias.sdist:sdist.sh
+alias.snakeupdate:selfupdate.sh
+alias.snakeinit:snakeinit.sh
+alias.sphinx:sphinx.sh
+alias.test:test.sh
