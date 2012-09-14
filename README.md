@@ -178,6 +178,27 @@ optional arguments:
                   recipients must be members of the NarrativeScience
                   organization.
 
+example run:
+git pullreq --title 'print url for created pull request'
+            --body 'print url for created pull request'
+            --to turtlebender,waltaskew
+Counting objects: 7, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 487 bytes, done.
+Total 4 (delta 3), reused 0 (delta 0)
+To git@github.com:NarrativeScience/snakegit.git
+ * [new branch]      feature/printurl -> feature/printurl
+ created pull request at https://github.com/NarrativeScience/snakegit/pull/10
+
+This command was issued from the local branch feature/printurl,
+and thus created a remote branch of the same name.
+It then created a pull request for this new remote branch against remote master.
+turtlebender and waltaskew were notified of the pull request using the
+@name syntax in the pull request description.
+The url for the new GitHub pull request was then printed out.
+
+
 git sdist
 -------------------------
 
