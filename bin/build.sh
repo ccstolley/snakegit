@@ -16,5 +16,5 @@ uid=$(echo $uid_key | cut -d';' -f1)
 key=$(echo $uid_key | cut -d';' -f2)
 PIP_DOWNLOAD_CACHE=$PIP_DOWNLOAD_CACHE $VIRTUALENV_DIR/bin/pip install \
 	--no-deps --extra-index-url `git config --get pypi.scheme`://$uid:$key@`git config --get pypi.host`/simple/ \
-	-r requirements.txt > /dev/null
+	-r requirements.txt
 
