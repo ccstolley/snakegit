@@ -7,3 +7,4 @@ rm -rf $VIRTUALENV_DIR
 rm -rf build dist
 rm -rf *.egg-info
 rm -rf src/*.egg-info
+rm -rf gearbox*
