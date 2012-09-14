@@ -90,7 +90,7 @@ upload() {
   if [ "$RESPONSE" = "y" ] || [ "$RESPONSE" = "Y" ] || [ "${RESPONSE}Y" = "Y" ] 
   then
     echo "Uploading gearbox artifact"
-    $SNAKEGIT_HOME/bin/gearboxupload.py -b s3_ops -e $ENVIRONMENT -n $PACKAGE_NAME -f $ARTIFACT
+    $SNAKEGIT_HOME/bin/python $SNAKEGIT_HOME/bin/gearboxupload.py -b s3_ops -e $ENVIRONMENT -n $PACKAGE_NAME -f $ARTIFACT
   else
     echo >&2 "Ok, not uploading artifact"
     exit 1
