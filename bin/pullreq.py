@@ -172,7 +172,11 @@ def main():
     args = get_args(ORGANIZATION, members)
     if args.push:
         push_branch()
-    create_pull_request(args.title, args.body, args.base, args.recips)
+    request_response = create_pull_request(
+            args.title, args.body, args.base, args.recips)
+    pull_request = json.loads(request_response)
+    print 'created pull request at %s' % pull_request['html_url']
+
 
 if __name__ == '__main__':
     main()
