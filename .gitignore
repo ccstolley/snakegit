@@ -7,3 +7,4 @@ bin/pip
 bin/pip*
 bin/python*
 *.log
+vendor/python
