@@ -163,39 +163,42 @@ Creates a GitHub pull request for the currently checked out branch.
 The convention relied upon by the pullreq command is that local and remote
 branches have the same name.
 
-optional arguments:
-  -h, --help      Show a help message and exit.
-  --title TITLE   Pull request title. Required.
-  --body  BODY    Pull request description. Required.
-  --base  BRANCH  Branch to create the pull request against. Optional,
+    optional arguments:
+      -h, --help      Show a help message and exit.
+      --title TITLE   Pull request title. Required.
+      --body  BODY    Pull request description. Required.
+      --base  BRANCH  Branch to create the pull request against. Optional,
                   defaults to master.
-  --no-push       Do not perform a push before creating the pull request.
+      --no-push       Do not perform a push before creating the pull request.
                   The default behaviour is to push the local branch to a
                   remote branch with the same name.
-  --list-members  List members of the organization NarrativeScience and exit.
+      --list-members  List members of the organization NarrativeScience and exit.
                   This list will contain valid values for the --to argument.
-  --to JOE,ED     Comma-seperated list of pull request recipients. Required,
+      --to JOE,ED     Comma-seperated list of pull request recipients. Required,
                   recipients must be members of the NarrativeScience
                   organization.
 
 example run:
-git pullreq --title 'print url for created pull request'
-            --body 'print url for created pull request'
-            --to turtlebender,waltaskew
-Counting objects: 7, done.
-Delta compression using up to 2 threads.
-Compressing objects: 100% (4/4), done.
-Writing objects: 100% (4/4), 487 bytes, done.
-Total 4 (delta 3), reused 0 (delta 0)
-To git@github.com:NarrativeScience/snakegit.git
- * [new branch]      feature/printurl -> feature/printurl
- created pull request at https://github.com/NarrativeScience/snakegit/pull/10
+
+    git pullreq --title 'print url for created pull request' \
+            --body 'print url for created pull request' \
+            --to turtlebender,waltaskew \
+    Counting objects: 7, done.
+    Delta compression using up to 2 threads.
+    Compressing objects: 100% (4/4), done.
+    Writing objects: 100% (4/4), 487 bytes, done.
+    Total 4 (delta 3), reused 0 (delta 0)
+    To git@github.com:NarrativeScience/snakegit.git
+    * [new branch]      feature/printurl -> feature/printurl
+    created pull request at https://github.com/NarrativeScience/snakegit/pull/10
 
 This command was issued from the local branch feature/printurl,
 and thus created a remote branch of the same name.
+
 It then created a pull request for this new remote branch against remote master.
 turtlebender and waltaskew were notified of the pull request using the
 @name syntax in the pull request description.
+
 The url for the new GitHub pull request was then printed out.
 
 
