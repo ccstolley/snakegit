@@ -11,7 +11,6 @@ coverage==3.5.2
 distribute==0.6.28
 docutils==0.9.1
 gitdb==0.5.4
-ipython==0.13
 logilab-astng==0.24.0
 logilab-common==0.58.1
 nose==1.2.0
