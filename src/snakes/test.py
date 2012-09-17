@@ -50,7 +50,6 @@ def main():
     args.coverage.format(args.output),
     args.package,
     args.directory)
-  print cmd
   snakes.util.run_cmd(cmd)
     
 

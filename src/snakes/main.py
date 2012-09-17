@@ -3,9 +3,9 @@ import argparse
 import os
 import os.path
 import pkg_resources
+import sys
 
 import snakes.util
-import clint
 
 
 def main():
@@ -18,13 +18,11 @@ def main():
   {0}
   '''.format( "\n  ".join(cmds))
   
-  parser = argparse.ArgumentParser(
-      formatter_class=argparse.RawDescriptionHelpFormatter,
-      epilog=epilog)
-  args = parser.add_argument('command', metavar="command", type=str,
-      help="Command to execute")
-  args = parser.parse_args() 
-  snakes.util.run_cmd("{0}/bin/{1}".format(home, args.command))
+  args = sys.argv[1:]
+  if args[0] == '-h':
+    print epilog
+  else:
+    snakes.util.run_cmd("{0}/bin/{1}".format(home, " ".join(args)))
 
 if __name__ == "__main__":
 
