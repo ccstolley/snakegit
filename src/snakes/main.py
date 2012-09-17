@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import argparse
+import os
+import os.path
 import pkg_resources
 
 import snakes.util
@@ -7,6 +9,7 @@ import clint
 
 
 def main():
+  home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
   cmds = sorted([ str(script).split(" = ")[0] for script in pkg_resources.iter_entry_points(group="snake_scripts") ])
 
   epilog='''
@@ -21,7 +24,7 @@ def main():
   args = parser.add_argument('command', metavar="command", type=str,
       help="Command to execute")
   args = parser.parse_args() 
-  snakes.util.run_cmd(args.command)
+  snakes.util.run_cmd("{0}/bin/{1}".format(home, args.command))
 
 if __name__ == "__main__":
 
