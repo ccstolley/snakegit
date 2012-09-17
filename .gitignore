@@ -17,3 +17,4 @@ build
 distribute*.tar.gz
 test_reports
 .coverage
+*.bak
