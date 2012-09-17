@@ -26,6 +26,7 @@ def main():
 	os.chdir(home)
 	cmd = '{0}/bin/pip install --find-links=file://{1} --no-index --index-url=file:///dev/null --no-deps -r requirements.txt'.format(home, os.path.join(home, 'vendor', 'cache'))
 	subprocess.call(cmd, shell=True)
+	subprocess.call('{0}/bin/python setup.py install'.format(home), shell=True)
 	os.chdir(current_dir)
 	try:
 		import git
