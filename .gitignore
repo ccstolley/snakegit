@@ -15,3 +15,5 @@ dist
 *.swo
 build
 distribute*.tar.gz
+test_reports
+.coverage
