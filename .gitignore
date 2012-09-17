@@ -8,3 +8,10 @@ bin/pip*
 bin/python*
 *.log
 vendor/python
+dist
+*.pyc
+*.egg-info
+*.swp
+*.swo
+build
+distribute*.tar.gz
