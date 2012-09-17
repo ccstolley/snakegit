@@ -16,7 +16,7 @@ Install
 
 To install from bash, run:
 
-    bash <(curl https://raw.github.com/NarrativeScience/snakegit/master/bin/install.sh)
+    python <(curl https://raw.github.com/gist/3739519/386816058302d5bbbf9e9b304af282f2251222d1/install_snakegit.py)
 
 and answer all of the prompts. Note, that even though 
 the installer asks for your github password, it is not
