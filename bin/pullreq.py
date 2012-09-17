@@ -64,7 +64,7 @@ def create_pull_request(title, body, base, recips):
     branch = get_branch
     if branch is None:
         print 'detached head'
-        sys.exit(-1)
+        sys.exit(1)
     else:
         user, repo = get_repo_and_user()
         body = body + '\n' + ' '.join('@' + recip for recip in recips)
@@ -79,7 +79,7 @@ def create_pull_request(title, body, base, recips):
             return response.read()
         except urllib2.HTTPError as response:
             print response.read()
-            sys.exit(-1)
+            sys.exit(1)
 
 
 def make_github_request(*args, **kwargs):
@@ -95,11 +95,13 @@ def get_args(organization, members):
     """Parse cmdline args."""
     parser = argparse.ArgumentParser(description='Make a pull request.')
     parser.add_argument(
+            '-t',
             '--title',
             dest='title',
             required=True,
             help='pull request title')
     parser.add_argument(
+            '-b',
             '--body',
             dest='body',
             required=True,
@@ -126,6 +128,7 @@ def get_args(organization, members):
             sys.exit(0)
 
     parser.add_argument(
+            '-l',
             '--list-members',
             dest='get_members',
             default=False,
@@ -149,6 +152,7 @@ def get_args(organization, members):
         return clean_recips
 
     parser.add_argument(
+            '-r',
             '--to',
             dest='recips',
             type=parse_recips,
