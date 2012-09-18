@@ -16,7 +16,7 @@ import requests
 import snakes.util
 
 
-def register_github(writer, user=''):
+def register_github(reader, writer, user=''):
 	print "Register github"
 	request_data = {
 				"scopes": ["repo", "gist"],
@@ -28,17 +28,20 @@ def register_github(writer, user=''):
 	result = requests.post(url, data=json.dumps(request_data), auth=(user, password))
 
 	data = result.json
-
+	if not reader.has_section('github'):
+		writer.add_section('github')
 	writer.set('github', 'user', user)
 	writer.set('github', 'token', data['token'])
 	writer.set('github', 'url', data['url'])
 
-def register_pypi(writer):
+def register_pypi(reader, writer):
 	print "Register with Pypi"
 	url = 'https://repo.n-s.us/token'
 	user = raw_input('What is your PyPi username? ')
 	password = getpass.getpass("What is your PyPi password?")
 	result = requests.post(url, auth=(user, password), verify=False)
+	if not reader.has_section('pypi'):
+		writer.add_section('pypi')
 	print result
 
 
@@ -46,11 +49,13 @@ def main():
 	"""docstring for main"""
 	home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
 	repo = git.Repo(home)
+	reader = repo.config_reader(config_level='global')
 	writer = repo.config_writer(config_level='global')
+	if not reader.has_section('alias'):
+		writer.add_section('alias')
 	writer.set('alias', 'snake', '! {0}/bin/snake'.format(home))
 	writer.write()
 
-	reader = repo.config_reader(config_level='global')
 	if reader.has_option('github', 'url'):
 		reset_github = clint.textui.colored.yellow('''
 You already seem to have github configured.
