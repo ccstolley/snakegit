@@ -6,7 +6,7 @@ import os.path
 import subprocess
 
 def main():
-"""docstring for main"""
+    """docstring for main"""
     home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
     pwd = os.getcwd()
     os.chdir(home)
