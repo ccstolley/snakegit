@@ -11,6 +11,7 @@ def main():
 	pwd = os.getcwd()
 	os.chdir(home)
 	snakes.util.run_cmd('git fetch && git pull')
+  snakes.util.run_cmd("{0}/bin/python setup.py install".format(home))	
 	snakes.util.run_cmd("{0}/bin/config".format(home))
 	os.chdir(pwd)
 
