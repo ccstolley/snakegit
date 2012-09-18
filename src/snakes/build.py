@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import snakes.util
+import subprocess
 import os
 import os.path
 
@@ -18,9 +18,9 @@ def main():
 	if not os.path.exists(os.path.join(venv, 'bin', 'python')):
 		snakes.util.runcmd('{0} --distribute {1}'.format(os.path.join(home, 'bin', 'virtualenv'), venv))
 	cmd = '{0}/bin/pip install --find-links=file://{1} --no-index --index-url=file:///dev/null --no-deps -r requirements.txt'.format(venv, cache)
-	snakes.util.run_cmd(cmd)
+	subprocess.call(cmd, shell=True)
 	cmd = '{0}/bin/python setup.py develop'.format(venv)
-	snakes.util.run_cmd(cmd)
+	subprocess.call(cmd)
 
 if __name__ == '__main__':
 	main()
