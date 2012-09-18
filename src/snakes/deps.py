@@ -5,21 +5,24 @@ import os
 import os.path
 import shutil
 import subprocess
+import git
 import sys
 
-if 'VIRTUALENV_HOME' in os.environ:
-    venv = os.environ['VIRTUALENV_HOME']
-else:
-    venv = 'vendor/python'
-if 'VENV_CACHE_HOME' in os.environ:
-    cache = os.environ['VENV_CACHE_HOME']
-else:
-    cache = os.path.abspath('vendor/cache')
+home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
+venv = os.path.abspath(os.environ.get('VIRTUALENV_HOME', 'vendor/python'))
+cache = os.path.abspath(os.environ.get('VENV_CACHE_HOME', 'vendor/cache'))
 
 def sync():
     shutil.rmtree(cache)
     os.makedirs(cache)
-    cmd = "pip install --no-install -d vendor/cache/ --no-deps -r requirements.txt"
+    repo = git.Repo(home)
+    reader = repo.config_reader()
+    if not reader.has_section('pypi'):
+        print "Pypi is not set up yet."
+        sys.exit(1)
+    uid = reader.get('pypi', 'user')
+    password = reader.get('pypi', 'key')
+    cmd = "pip install --no-install -d vendor/cache/ --no-deps -i https://{0}:{1}@repo.n-s.us/simple -r requirements.txt".format(uid, password)
     subprocess.call(cmd, shell=True)
     if os.path.exists(os.path.abspath('./test-requirements')):
         cmd = "yes w | pip install --no-install -d vendor/cache/ --no-deps -r test-requirements.txt"
