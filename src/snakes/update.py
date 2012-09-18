@@ -3,7 +3,7 @@
 import os
 import os.path
 
-import snakes.util
+import subprocess
 
 def main():
 """docstring for main"""
