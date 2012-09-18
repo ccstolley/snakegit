@@ -43,7 +43,7 @@ def unit(args):
 
     if not os.path.exists(args.output):
         os.makedirs(args.output)
-    python_path = 'PYTHONPATH=src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
+    python_path = 'PYTHONPATH=test_configs:src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
     cmd = "{0} {1}/bin/nosetests {2} {3} {4} {5}".format(
           python_path,
           home,
@@ -61,14 +61,7 @@ def functional():
 
 def main():
     """docstring for main"""
-    if len(sys.argv) == 1:
-        unit([])
-    elif sys.argv[1] == 'functional':
-        functional()
-    elif sys.argv[1] == 'unit':
-        unit(sys.argv[2:])
-    else:
-        unit(sys.argv[2:])
+    unit(sys.argv[1:])
 
 if __name__ == '__main__':
     main()
