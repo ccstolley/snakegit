@@ -21,7 +21,7 @@ def upload():
     key = reader.get('pypi', 'key')
     upload_file = subprocess.check_output("ls -rt dist/|tail -1", shell=True).strip()
     with open(os.path.abspath(os.path.join('dist',upload_file)), 'r') as f:
-        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key), files={'file': f}, verify=False)
+        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key), files={'upload_file': f}, verify=False)
     
 
 def main():
