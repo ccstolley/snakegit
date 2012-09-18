@@ -11,13 +11,14 @@ scripts = ["{0}={1}".format(key, config.get('commands', key)) for key in config.
 
 with open("requirements.txt", 'r') as f:
 	requires = [req.strip() for req in f.readlines()]
+
 setuptools.setup(
 		name=config.get("release", "name"),
 		version=config.get("release", "version"),
 		description=config.get("release", "description"),
 		package_dir={"":"src"},
 		packages=setuptools.find_packages("src"),
-		install_requires=requires,
+#		install_requires=requires,
 		package_data = {
 			"snakes": ["nyan"]
 			},
