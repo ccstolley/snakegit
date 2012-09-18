@@ -17,7 +17,7 @@ import snakes.util
 
 
 def register_github(reader, writer, user=''):
-	print "Register github"
+    print "Register github"
     request_data = {
                 "scopes": ["repo", "gist"],
                 "note": "SnakeGit tools"
