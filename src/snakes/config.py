@@ -62,18 +62,18 @@ You already seem to have github configured.
 Do you want to reset it [n]? ''')
 		response = raw_input(reset_github)
 		if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
-			register_github(writer, reader.get('github', 'user'))
+			register_github(reader, writer, reader.get('github', 'user'))
 	else:
-		register_github(writer)
+		register_github(reader, writer)
 	if reader.has_option('pypi', 'user'):
 		reset_pypi = clint.textui.colored.yellow('''
 You already seem to have pypi configured.
 Do you want to reset it [n]? ''')
 		response = raw_input(reset_pypi)
 		if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
-			register_pypi(writer)
+			register_pypi(reader, writer)
 	else:
-		register_pypi(writer)
+		register_pypi(reader, writer)
 
 if __name__ == '__main__':
 	main()
