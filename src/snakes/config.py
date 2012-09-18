@@ -39,10 +39,11 @@ def register_pypi(reader, writer):
 	url = 'https://repo.n-s.us/token'
 	user = raw_input('What is your PyPi username? ')
 	password = getpass.getpass("What is your PyPi password?")
-	result = requests.post(url, auth=(user, password), verify=False)
+	result = requests.post(url, auth=(user, password), verify=False).json
 	if not reader.has_section('pypi'):
 		writer.add_section('pypi')
-	print result
+	writer.set('pypi', 'user', result['uid'])
+	writer.set('pypi', 'key', result['key'])
 
 
 def main():
