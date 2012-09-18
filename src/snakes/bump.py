@@ -41,11 +41,11 @@ def main():
 
     if snakes.util.confirm(prompt):
         config.set('release', 'version', version)
-    with open('./snake.cfg', 'w') as f:
-        config.write(f)
-    print clint.textui.colored.blue("Version updated.")
-else:
-    print clint.textui.colored.yellow("Not bumping version.")
+        with open('./snake.cfg', 'w') as f:
+            config.write(f)
+        print clint.textui.colored.blue("Version updated.")
+    else:
+        print clint.textui.colored.yellow("Not bumping version.")
 
 if __name__ == '__main__':
     main()
