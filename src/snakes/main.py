@@ -20,8 +20,9 @@ def main():
     args = sys.argv[1:]
     if args[0] == '-h':
         print epilog
+        return 0
     else:
-        snakes.util.run_cmd(["{0}/bin/{1}".format(home, args[0]),] + args[1:])
+        return snakes.util.run_cmd(["{0}/bin/{1}".format(home, args[0]), ] + args[1:])
 
 if __name__ == "__main__":
     sys.exit(main())
