@@ -50,7 +50,7 @@ def unit(args):
 
     if not os.path.exists(args.output):
         os.makedirs(args.output)
-    python_path = 'PYTHONPATH=test_configs:src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
+    python_path = 'test_configs:src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
     cmd = "{0}/bin/nosetests {1} {2} {3} {4}".format(
           home,
           args.xunit.format(args.output),
