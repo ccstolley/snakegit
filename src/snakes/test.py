@@ -51,7 +51,8 @@ def unit(args):
           args.coverage.format(args.output),
           args.package,
           args.directory)
-    snakes.util.run_cmd(cmd)
+    return snakes.util.run_cmd(cmd)
+
 
 def functional():
     if os.path.exists('tests/functional'):
@@ -59,9 +60,10 @@ def functional():
             for filename in filenames:
                 snakes.util.run_cmd(os.path.join(dirname, filename))
 
+
 def main():
     """docstring for main"""
-    unit(sys.argv[1:])
+    return unit(sys.argv[1:])
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
