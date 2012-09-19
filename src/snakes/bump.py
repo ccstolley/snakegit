@@ -31,8 +31,11 @@ def main():
         micro = int(micro) + 1
     if args.minor:
         minor = int(minor) + 1
+        micro = 0
     if args.major:
         major = int(major) + 1
+        minor = 0
+        micro = 0
     version = "{0}.{1}.{2}".format(major, minor, micro)
     if args.snapshot:
         version = "{0}-SNAPSHOT".format(version)
