@@ -21,8 +21,23 @@ def upload():
     key = reader.get('pypi', 'key')
     upload_file = subprocess.check_output("ls -rt dist/|tail -1", shell=True).strip()
     with open(os.path.abspath(os.path.join('dist',upload_file)), 'r') as f:
-        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key), files={'upload_file': f}, verify=False)
+        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key), files={'upload_file': (upload_file, f) }, verify=False)
+        if r.status_code == 201:
+            print "Uploaded successfully"
+        else:
+            print "Error uploading package"
     
+def python_sdist():
+    print "Building python source distribution" 
+    cmd = ["{0}/bin/python".format(venv),
+            "setup.py",
+            "sdist"]
+    subprocess.call(cmd)
+
+def create():
+    if os.path.exists(os.path.abspath('./setup.py')) \
+            and not os.path.exists(os.path.abspath('./_gb')):
+        python_sdist()
 
 def main():
     """docstring for main"""
@@ -30,10 +45,7 @@ def main():
         print "either specify create or upload"
         sys.exit(1)
     if sys.argv[1] == 'create':
-        if os.path.exists(os.path.abspath('./setup.py')) \
-                and not os.path.exists(os.path.abspath('./_gb')):
-            print "Building python source distribution" 
-            subprocess.call("{0}/bin/python setup.py sdist".format(venv), shell=True)
+        create()
     elif sys.argv[1] == 'upload':
         upload()
     else:

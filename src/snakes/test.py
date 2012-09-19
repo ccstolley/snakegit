@@ -3,6 +3,7 @@
 import argparse
 import os
 import os.path
+import subprocess
 import sys
 
 import snakes.util
@@ -36,22 +37,27 @@ def unit(args):
     args = parser.parse_args(args)
 
     if os.path.exists(os.path.join(os.getcwd(), 'test-requirements.txt')):
-        cmd = '{0}/bin/pip install --find-links=file://{1} --no-index --index-url=file:///dev/null --no-deps -r test-requirements.txt'.format(venv, cache)
-        snakes.util.run_cmd(cmd)
+        cmd = ['{0}/bin/pip install'.format(venv),
+               '--find-links=file://{1}'.format(cache),
+               '--no-index',
+               '--index-url=file:///dev/null',
+               '--no-deps',
+               '-r',
+               'test-requirements.txt']
+        subprocess.call(cmd)
     if args.package is not None and args.package != '':
         args.package = '--cover-package={0}'.format(args.package)
 
     if not os.path.exists(args.output):
         os.makedirs(args.output)
     python_path = 'PYTHONPATH=test_configs:src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
-    cmd = "{0} {1}/bin/nosetests {2} {3} {4} {5}".format(
-          python_path,
+    cmd = "{0}/bin/nosetests {1} {2} {3} {4}".format(
           home,
           args.xunit.format(args.output),
           args.coverage.format(args.output),
           args.package,
           args.directory)
-    return snakes.util.run_cmd(cmd)
+    return subprocess.call(cmd.split(), env={"PYTHONPATH": python_path})
 
 
 def functional():
