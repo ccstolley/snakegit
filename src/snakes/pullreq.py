@@ -47,13 +47,13 @@ def get_repo_and_user():
             'git remote show origin',
             shell=True,
             stdout=subprocess.PIPE).communicate()
-    for line in origin.split('\n'):
+    for line in origin.splitlines():
         line = line.strip()
         if line.startswith(ORIGIN_LINE_START):
             origin_line = line[len(ORIGIN_LINE_START):].strip()
             _, user_name_repo = origin_line.split(':')
             while user_name_repo.startswith('/'):
-                user_name_repo = user_name_repo[-1:]
+                user_name_repo = user_name_repo[1:]
             user_name, repo = user_name_repo.split('/')
             repo = repo.replace('.git', '')
             return user_name, repo
