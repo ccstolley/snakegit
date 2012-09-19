@@ -22,7 +22,7 @@ def main():
     if args[0] == '-h':
         print epilog
     else:
-        snakes.util.run_cmd("{0}/bin/{1}".format(home, " ".join(args)))
+        snakes.util.run_cmd(["{0}/bin/{1}".format(home, args[0]),] + args[1:])
 
 if __name__ == "__main__":
     main()
