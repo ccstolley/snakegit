@@ -34,6 +34,6 @@ def install_signal_handlers():
 
 def run_cmd(cmd):
     install_signal_handlers()
-    return subprocess.call(cmd, shell=True)
+    return subprocess.call(cmd, shell=False)
 
 
