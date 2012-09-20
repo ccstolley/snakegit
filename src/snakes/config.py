@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import getpass
 import json
 import os
@@ -48,33 +49,39 @@ def register_pypi(reader, writer):
 
 def main():
     """docstring for main"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--interactive',
+            action='store_true', default=False,
+            help="Ask interactive questions")
+    args = parser.parse_args()
     home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
     repo = git.Repo(home)
     reader = repo.config_reader(config_level='global')
     writer = repo.config_writer(config_level='global')
-    if not reader.has_section('alias'):
-        writer.add_section('alias')
-    writer.set('alias', 'snake', '! {0}/bin/snake'.format(home))
-    writer.write()
+    if args.interactive:
+        if not reader.has_section('alias'):
+            writer.add_section('alias')
+        writer.set('alias', 'snake', '! {0}/bin/snake'.format(home))
+        writer.write()
 
-    if reader.has_option('github', 'url'):
-        reset_github = clint.textui.colored.yellow('''
+        if reader.has_option('github', 'url'):
+            reset_github = clint.textui.colored.yellow('''
 You already seem to have github configured.
 Do you want to reset it [n]? ''')
-        response = raw_input(reset_github)
-        if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
-            register_github(reader, writer, reader.get('github', 'user'))
-    else:
-        register_github(reader, writer)
-    if reader.has_option('pypi', 'user'):
-        reset_pypi = clint.textui.colored.yellow('''
+            response = raw_input(reset_github)
+            if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
+                register_github(reader, writer, reader.get('github', 'user'))
+        else:
+            register_github(reader, writer)
+        if reader.has_option('pypi', 'user'):
+            reset_pypi = clint.textui.colored.yellow('''
 You already seem to have pypi configured.
 Do you want to reset it [n]? ''')
-        response = raw_input(reset_pypi)
-        if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
+            response = raw_input(reset_pypi)
+            if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
+                register_pypi(reader, writer)
+        else:
             register_pypi(reader, writer)
-    else:
-        register_pypi(reader, writer)
 
 if __name__ == '__main__':
     main()
