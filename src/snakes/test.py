@@ -37,8 +37,9 @@ def unit(args):
     args = parser.parse_args(args)
 
     if os.path.exists(os.path.join(os.getcwd(), 'test-requirements.txt')):
-        cmd = ['{0}/bin/pip install'.format(venv),
-               '--find-links=file://{1}'.format(cache),
+        cmd = ['{0}/bin/pip'.format(home),
+               'install',
+               '--find-links=file://{0}'.format(cache),
                '--no-index',
                '--index-url=file:///dev/null',
                '--no-deps',
