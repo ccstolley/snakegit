@@ -11,7 +11,7 @@ import snakes.util
 
 def unit(args):
     venv = os.environ.get('VIRTUALENV_HOME', 'vendor/python')
-    cache = os.environ.get('VENV_CACHE_HOME', 'vendor/cache')
+    cache = os.environ.get('VENV_CACHE_HOME', 'vendor/cache/')
     home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
     parser = argparse.ArgumentParser()
     parser.add_argument('-x', '--xunit',
@@ -37,14 +37,8 @@ def unit(args):
     args = parser.parse_args(args)
 
     if os.path.exists(os.path.join(os.getcwd(), 'test-requirements.txt')):
-        cmd = ['{0}/bin/pip'.format(home),
-               'install',
-               '--find-links=file://{0}'.format(cache),
-               '--no-index',
-               '--index-url=file:///dev/null',
-               '--no-deps',
-               '-r',
-               'test-requirements.txt']
+        cmd = '{0}/bin/pip install --find-links=file://{1} --no-index --index-url=file:///dev/null --no-deps -r test-requirements.txt'.format(venv, os.path.abspath(cache))
+        cmd = cmd.split(' ')
         subprocess.call(cmd)
     if args.package is not None and args.package != '':
         args.package = '--cover-package={0}'.format(args.package)
