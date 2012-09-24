@@ -18,7 +18,14 @@ cache = os.environ.get('VENV_CACHE_HOME', os.path.abspath('vendor/cache'))
 home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
 
-def upload():
+def upload()
+    if os.path.exists(os.path.abspath('./setup.py')) \
+            and not os.path.exists(os.path.abspath('./_gb')):
+        upload_pypi()
+    if os.path.exists(os.path.abspath('./_gb')):
+        upload_gearbox_app()
+
+def upload_pypi():
     parser = argparse.ArgumentParser()
     repo = git.Repo(home)
     reader = repo.config_reader()
