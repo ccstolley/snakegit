@@ -79,6 +79,11 @@ def gearbox_dist():
         "{0}/".format(venv),
         "gearbox/"]
     subprocess.call(cmd)
+    cmd = ["rsync",
+        "-arv",
+        "_gb/gbtemplates/",
+        "gearbox/gbtemplates/"]
+    subprocess.call(cmd)
     cwd = os.getcwd()
     if not os.path.exists('./gearbox_dist'):
         os.mkdir('./gearbox_dist')
