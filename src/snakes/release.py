@@ -26,7 +26,6 @@ def upload():
         upload_gearbox_app()
 
 def upload_pypi():
-    parser = argparse.ArgumentParser()
     repo = git.Repo(home)
     reader = repo.config_reader()
     uid = reader.get('pypi', 'user')
@@ -43,7 +42,7 @@ def upload_gearbox_app():
     args = argparse.ArgumentParser()
     args.add_argument("-e", "--environment",
             required=True, help="Which environment should this upload to?")
-    args = args.parse_args()
+    args = args.parse_args(sys.argv[2:])
     parser = ConfigParser.RawConfigParser()
     parser.read(os.path.abspath('snake.cfg'))
     name = parser.get('release', 'name')
@@ -51,8 +50,8 @@ def upload_gearbox_app():
     s3_conn = boto.connect_s3()
     bucket = s3_conn.get_bucket(bucket_name)
     key = boto.s3.key.Key(bucket)
-    key.key = '{0}.tar.gz'.format(version)
-    key.get_contest_from_filename('gearbox_dist/{0}/{1}.tar.gz'.format(args.environment, version))
+    key.key = '{0}/{1}.tar.gz'.format(args.environment, version)
+    key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
     
 def python_sdist():
