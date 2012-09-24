@@ -50,7 +50,7 @@ def upload_gearbox_app():
     s3_conn = boto.connect_s3()
     bucket = s3_conn.get_bucket(bucket_name)
     key = boto.s3.key.Key(bucket)
-    key.key = '{0}/{1}.tar.gz'.format(args.environment, version)
+    key.key = '{0}/{1}/{2}.tar.gz'.format(name, args.environment, version)
     key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
     
