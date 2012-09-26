@@ -17,12 +17,16 @@ def main():
   {0}
   '''.format("\n  ".join(cmds))
 
+    old_dir = os.getcwd()
+    os.chdir(os.path.abspath(os.environ.get('GIT_PREFIX', '.')))
     args = sys.argv[1:]
     if args[0] == '-h':
         print epilog
-        return 0
+        exit_code = 0
     else:
-        return snakes.util.run_cmd(["{0}/bin/{1}".format(home, args[0]), ] + args[1:])
+        exit_code = snakes.util.run_cmd(["{0}/bin/{1}".format(home, args[0]), ] + args[1:])
+    os.chdir(old_dir)
+    return exit_code
 
 if __name__ == "__main__":
     sys.exit(main())
