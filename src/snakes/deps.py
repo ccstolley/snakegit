@@ -29,7 +29,9 @@ def sync():
     uid = reader.get('pypi', 'user')
     password = reader.get('pypi', 'key')
 
-    os.path.exists(os.path.join('vendor','cache', urlparse.urlparse(dl).path.split('/')[-1]))
+    #os.path.exists(os.path.join('vendor','cache', urlparse.urlparse(dl).path.split('/')[-1]))
+    yes_cmd = [ "yes", "w" ]
+    p1 = subprocess.Popen(yes_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd = [
             "pip",
             'install',
@@ -38,11 +40,15 @@ def sync():
             'vendor/cache/',
             '--no-deps',
             '--use-mirrors',
-            '--extra-index-url https://{0}:{1}@repo.n-s.us/simple'.format(uid,password),
+            "-i",
+            "https://{0}:{1}@repo.n-s.us/simple/".format(uid,password),
             '-r',
             'requirements.txt'
             ]
-    subprocess.call(cmd)
+    p2 = subprocess.Popen(cmd, stdin=p1.stdout)
+    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    p2.communicate()
+
     if os.path.exists(os.path.abspath('./test-requirements')):
         cmd = [
                 'pip',
@@ -54,7 +60,10 @@ def sync():
                 '-r',
                 'test-requirements.txt'
                 ]
-        subprocess.call(cmd)
+        p1 = Popen(yes_cmd, stdout=PIPE)
+        p2 = Popen(cmd, stdin=p1.stdout)
+        p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+        p2.communicate()
 
 
 def main():
