@@ -13,13 +13,13 @@ ignore_list = [ '*.pyc', 'build', 'dist', 'gearbox*', '*.egg-info', 'vendor/pyth
 paths = [ 'tests', 'tests/unit', 'tests/functional', 'test_configs', 'docs', 'docs/src', 'src' ]
 files = [ 'snake.cfg', 'MANIFEST.in', 'setup.py' ]
 readme_strings = {
-        'tests': "This is the root directory for tests",
-        'tests/unit': "All unit tests go in this directory",
-        'tests/functional': "Functional tests go in this directory",
-        'test_configs': 'This directory is added to the PYTHONPATH when tests are run',
-        'docs': 'Root directory for docs',
-        'docs/src': 'Source for documentation',
-        'src': 'All of your source goes in here'
+        'tests': "This is the root directory for tests\n",
+        'tests/unit': "All unit tests go in this directory\n",
+        'tests/functional': "Functional tests go in this directory\n",
+        'test_configs': 'This directory is added to the PYTHONPATH when tests are run\n',
+        'docs': 'Root directory for docs\n',
+        'docs/src': 'Source for documentation\n',
+        'src': 'All of your source goes in here\n'
         }
 
 meta_fields = [
@@ -46,8 +46,13 @@ setuptools.setup(name=parser.get('release', 'name'),
 manifest_in_template = "include snake.cfg"
 
 def main():
-    """docstring for main"""
-    repo = git.Repo('.')
+    """
+    Initializes a project to work with snake
+    """
+    if not os.path.exists('.git'):
+        repo = git.Repo.init(os.path.abspath('.'))
+    else:
+        repo = git.Repo('.')
     git_ignore = os.path.abspath('./.gitignore')
     git_updated = False
     # generate .gitignore file
@@ -123,6 +128,10 @@ setup.py to pull in the snake.cfg details.  Here is an example:
                 handle.write(manifest_in_template)
             git_updated = True
     
+    if not os.path.exists('requirements.txt'):
+        with open('requirements.txt', 'w') as handle:
+            handle.write('# Created by Gitsnake. HISSSSSSSSSSSSSSSSSSSSSSSSS\n')
+
     for path in files:
         repo.index.add([path])
 
