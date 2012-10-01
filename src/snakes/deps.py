@@ -10,13 +10,13 @@ import sys
 import urlparse
 
 import git
-import yolk.pypi
+#import yolk.pypi
 
 home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
 venv = os.path.abspath(os.environ.get('VIRTUALENV_HOME', 'vendor/python'))
 cache = os.path.abspath(os.environ.get('VENV_CACHE_HOME', 'vendor/cache'))
 
-cheese_shop = yolk.pypi.CheeseShop()
+#cheese_shop = yolk.pypi.CheeseShop()
 
 def sync():
     if not os.path.exists(cache):
