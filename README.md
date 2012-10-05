@@ -181,7 +181,7 @@ branches have the same name.
 example run:
 
     git pullreq --title 'print url for created pull request' \
-            --body 'print url for created pull request' \
+            --body 'UI imporvement for pullreq -- does this make sense to you guys?' \
             --to turtlebender,waltaskew \
     Counting objects: 7, done.
     Delta compression using up to 2 threads.
