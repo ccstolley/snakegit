@@ -20,7 +20,7 @@ def main():
     old_dir = os.getcwd()
     os.chdir(os.path.abspath(os.environ.get('GIT_PREFIX', '.')))
     args = sys.argv[1:]
-    if args[0] == '-h':
+    if len(args) == 0 or args[0] == '-h':
         print epilog
         exit_code = 0
     else:

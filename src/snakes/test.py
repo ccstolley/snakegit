@@ -54,13 +54,11 @@ def unit(args):
     if not os.path.exists(args.output):
         os.makedirs(args.output)
     python_path = 'test_configs:src:.:{0}/lib/python2.6/site-packages:{0}/lib/python2.7/site-packages'.format(venv)
-    cmd = [
-            "{0}/bin/nosetests".format(home),
-            args.xunit.format(args.output),
-            args.coverage.format(args.output),
-            args.package,
-            args.directory
-            ]
+    cmd = [ "{0}/bin/nosetests".format(home), ]
+    cmd.extend(args.xunit.format(args.output).split(' '))
+    cmd.extend(args.coverage.format(args.output).split(' '))
+    cmd.append(args.package)
+    cmd.append(args.directory)
     return subprocess.call(cmd, env={"PYTHONPATH": python_path})
 
 
