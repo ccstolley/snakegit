@@ -165,23 +165,23 @@ branches have the same name.
 
     optional arguments:
       -h, --help      Show a help message and exit.
-      --title TITLE   Pull request title. Required.
-      --body  BODY    Pull request description. Required.
+      -t --title TITLE   Pull request title. Required.
+      -b --body  BODY    Pull request description. Required.
       --base  BRANCH  Branch to create the pull request against. Optional,
-                  defaults to master.
+                      defaults to master.
       --no-push       Do not perform a push before creating the pull request.
-                  The default behaviour is to push the local branch to a
-                  remote branch with the same name.
-      --list-members  List members of the organization NarrativeScience and exit.
-                  This list will contain valid values for the --to argument.
-      --to JOE,ED     Comma-seperated list of pull request recipients. Required,
-                  recipients must be members of the NarrativeScience
-                  organization.
+                      The default behaviour is to push the local branch to a
+                      remote branch with the same name.
+      -l --list-members  List members of the organization NarrativeScience and exit.
+                         This list will contain valid values for the --to argument.
+      -r --to JOE,ED     Comma-seperated list of pull request recipients. Required,
+                         recipients must be members of the NarrativeScience
+                         organization.
 
 example run:
 
     git pullreq --title 'print url for created pull request' \
-            --body 'print url for created pull request' \
+            --body 'UI imporvement for pullreq -- does this make sense to you guys?' \
             --to turtlebender,waltaskew \
     Counting objects: 7, done.
     Delta compression using up to 2 threads.
