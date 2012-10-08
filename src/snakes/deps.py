@@ -30,8 +30,6 @@ def sync():
     password = reader.get('pypi', 'key')
 
     #os.path.exists(os.path.join('vendor','cache', urlparse.urlparse(dl).path.split('/')[-1]))
-    yes_cmd = [ "yes", "w" ]
-    p1 = subprocess.Popen(yes_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd = [
             "pip",
             'install',
@@ -45,8 +43,7 @@ def sync():
             '-r',
             'requirements.txt'
             ]
-    p2 = subprocess.Popen(cmd, stdin=p1.stdout)
-    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    p2 = subprocess.Popen(cmd)
     p2.communicate()
 
     if os.path.exists(os.path.abspath('./test-requirements')):
@@ -60,9 +57,7 @@ def sync():
                 '-r',
                 'test-requirements.txt'
                 ]
-        p1 = Popen(yes_cmd, stdout=PIPE)
-        p2 = Popen(cmd, stdin=p1.stdout)
-        p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+        p2 = Popen(cmd)
         p2.communicate()
 
 
