@@ -163,7 +163,7 @@ Creates a GitHub pull request for the currently checked out branch.
 The convention relied upon by the pullreq command is that local and remote
 branches have the same name.
 
-    optional arguments:
+    arguments:
       -h, --help      Show a help message and exit.
       -t --title TITLE   Pull request title. Required.
       -b --body  BODY    Pull request description. Required.
