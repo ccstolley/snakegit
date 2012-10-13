@@ -59,7 +59,7 @@ def get_repo_and_user():
             return user_name, repo
 
 
-def create_pull_request(title, body, base, recips):
+def create_pull_request(title, body, base, recips, assignee):
     """Create the pull request."""
     branch = get_branch
     if branch is None:
@@ -76,10 +76,27 @@ def create_pull_request(title, body, base, recips):
         url = BASE_URL + '/repos/%s/%s/pulls' % (user, repo)
         try:
             response = make_github_request(url=url, data=json.dumps(args))
-            return response.read()
+            response_str = response.read()
+            num = parse_pullreq_number(response_str)
+            if (num != None and assignee != None):
+                assign_pull_request(number, assignee)
+            return response_str
         except urllib2.HTTPError as response:
             print response.read()
             sys.exit(1)
+
+def assign_pull_request(number, assignee):
+    """
+    Assign a pullrequest to someone
+    """
+    user, repo = get_repo_and_user()
+    url = BASE_URL + '/repos/%s/%s/issues/%n' % (user, repo, number)
+    args = {'assignee': assignee}
+    try:
+        make_github_reuqest(url=url, data=json.dumps(args))
+    except urlib2.HTTPError as response:
+        pass
+    
 
 
 def make_github_request(*args, **kwargs):
@@ -90,6 +107,15 @@ def make_github_request(*args, **kwargs):
     req = urllib2.Request(*args, **kwargs)
     return urllib2.urlopen(req)
 
+
+def parse_pullreq_number(response):
+    """Given a response string, determine what the pullreq # is."""
+    tail = response.split('/')[-1]
+    try:
+        num = int(tail)
+        return num
+    except ValueError:
+        return None
 
 def get_args(organization, members):
     """Parse cmdline args."""
@@ -119,7 +145,15 @@ def get_args(organization, members):
             action='store_false',
             required=False,
             help='do not perform a push before creating the pull request')
-
+    paser.add_argument(
+        '--assign',
+        '-a',
+        dest='assign',
+        default=None,
+        required=False,
+        help='assign the resulting pull request to someone')
+        
+    
     class ListMembers(argparse.Action):
         """List members of the organization and exit"""
         def __call__(*args, **kwargs):
@@ -177,7 +211,7 @@ def main():
     if args.push:
         push_branch()
     request_response = create_pull_request(
-            args.title, args.body, args.base, args.recips)
+            args.title, args.body, args.base, args.recips, args.assignee)
     pull_request = json.loads(request_response)
     print 'created pull request at %s' % pull_request['html_url']
 
