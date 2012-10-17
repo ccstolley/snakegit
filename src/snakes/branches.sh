@@ -51,6 +51,17 @@ function git_new_release(){
     git branch --set-upstream $RELEASE_BRANCH  origin/$RELEASE_BRANCH;
 }
 
+function git_create_develop(){
+    #
+    # util to create the remote develop branch
+    # only needs to be done once per repo
+    git checkout master
+    git pull
+    git checkout -b develop
+    git push origin develop
+    git branch --set-upstream develop origin/develop
+}
+
 
 function git_follow_develop(){
     #
