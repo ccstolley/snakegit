@@ -36,7 +36,6 @@ def sync():
             '--no-install',
             '-d',
             'vendor/cache/',
-            '--no-deps',
             '--use-mirrors',
             "-i",
             "https://{0}:{1}@repo.n-s.us/simple/".format(uid,password),
