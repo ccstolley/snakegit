@@ -17,23 +17,50 @@ import requests
 import snakes.util
 
 
+GH_AUTH_URL = 'https://api.github.com/authorizations'
+
+GH_REQUEST_DATA = {
+    "scopes": ["repo", "gist"],
+    "note": "SnakeGit tools"
+    }
+
+def prompt_boolean(text, default_):
+    text_default = "%s [%s]? " % (text.rstrip('?'), 'y' if default_ else 'n')
+    text_colored = clint.textui.colored.yellow(text_default)
+    response = raw_input(text_colored).strip()
+    if response is None or len(response) == 0:
+        return default_
+    return response.lower() in ['y', 'yes', 'yea', 'yeah']
+
+def register_github_interactive(user):
+    '''Prompt for username and pass, return github (auth token, url) tuple'''
+    while True:
+        user = raw_input("What is your github username [{0}]? ".format(user))
+        password = getpass.getpass("What is your github password? ")
+        result = requests.post(GH_AUTH_URL, data=json.dumps(GH_REQUEST_DATA),
+                               auth=(user, password))
+        data = result.json
+        message = data.get('message', None)
+        if message is not None:
+            prompt = 'Github login failed: %s\nRetry?' % message
+            if prompt_boolean(prompt, True):
+                continue
+            sys.exit(1)
+        try:
+            return (data['token'], data['url'])
+        except KeyError:
+            prompt = 'Incomplete reply from Github: %s\nRetry?' % data
+            if not prompt_boolean(prompt, True):
+                sys.exit(1)
+
 def register_github(reader, writer, user=''):
     print "Register github"
-    request_data = {
-                "scopes": ["repo", "gist"],
-                "note": "SnakeGit tools"
-                }
-    url = 'https://api.github.com/authorizations'
-    user = raw_input("What is your github username [{0}]? ".format(user))
-    password = getpass.getpass("What is your github password? ")
-    result = requests.post(url, data=json.dumps(request_data), auth=(user, password))
-
-    data = result.json
+    (token, url) = register_github_interactive(user)
     if not reader.has_section('github'):
         writer.add_section('github')
     writer.set('github', 'user', user)
-    writer.set('github', 'token', data['token'])
-    writer.set('github', 'url', data['url'])
+    writer.set('github', 'token', token)
+    writer.set('github', 'url', url)
 
 def register_pypi(reader, writer):
     print "Register with Pypi"
@@ -65,20 +92,14 @@ def main():
         writer.write()
 
         if reader.has_option('github', 'url'):
-            reset_github = clint.textui.colored.yellow('''
-You already seem to have github configured.
-Do you want to reset it [n]? ''')
-            response = raw_input(reset_github)
-            if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
+            if prompt_boolean('''You already seem to have github configured.
+Do you want to reset it?''', False):
                 register_github(reader, writer, reader.get('github', 'user'))
         else:
             register_github(reader, writer)
         if reader.has_option('pypi', 'user'):
-            reset_pypi = clint.textui.colored.yellow('''
-You already seem to have pypi configured.
-Do you want to reset it [n]? ''')
-            response = raw_input(reset_pypi)
-            if response.strip().lower() in  ['y', 'yes', 'yea', 'yeah']:
+            if prompt_boolean('''You already seem to have pypi configured.
+Do you want to reset it?''', False):
                 register_pypi(reader, writer)
         else:
             register_pypi(reader, writer)
