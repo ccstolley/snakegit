@@ -145,7 +145,7 @@ def get_args(organization, members):
             action='store_false',
             required=False,
             help='do not perform a push before creating the pull request')
-    paser.add_argument(
+    parser.add_argument(
         '--assign',
         '-a',
         dest='assign',
