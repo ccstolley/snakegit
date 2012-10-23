@@ -148,7 +148,7 @@ def get_args(organization, members):
     parser.add_argument(
         '--assign',
         '-a',
-        dest='assign',
+        dest='assignee',
         default=None,
         required=False,
         help='assign the resulting pull request to someone')
