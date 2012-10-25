@@ -3,7 +3,7 @@
 import argparse
 import ConfigParser
 import os
-from os.path import abspath, exists, expanduser
+from os.path import abspath, exists, expanduser, join
 import shutil
 import subprocess
 import sys
