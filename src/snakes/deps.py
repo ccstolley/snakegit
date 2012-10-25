@@ -2,7 +2,7 @@
 
 import argparse
 import os
-import os.path
+from os.path import abspath, exists, expanduser, join
 import shutil
 import subprocess
 import re
@@ -10,27 +10,33 @@ import sys
 import urlparse
 
 import git
-#import yolk.pypi
 
-home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
-venv = os.path.abspath(os.environ.get('VIRTUALENV_HOME', 'vendor/python'))
-cache = os.path.abspath(os.environ.get('VENV_CACHE_HOME', 'vendor/cache'))
 
-#cheese_shop = yolk.pypi.CheeseShop()
+def requirements(filename):
+    "Generator for iterating the contents of a requirements file"
+    with open(filename, "r") as fp:
+        for package in fp:
+            yield package.strip().split("==")
 
-def sync():
-    if not os.path.exists(cache):
-        os.makedirs(cache)
-    repo = git.Repo(home)
-    reader = repo.config_reader()
-    if not reader.has_section('pypi'):
-        print "Pypi is not set up yet."
-        sys.exit(1)
-    uid = reader.get('pypi', 'user')
-    password = reader.get('pypi', 'key')
+class DependenciesTarget(object):
 
-    #os.path.exists(os.path.join('vendor','cache', urlparse.urlparse(dl).path.split('/')[-1]))
-    cmd = [
+    home = os.environ.get('SNAKEGIT_HOME', expanduser('~/.snakegit'))
+    venv = abspath(os.environ.get('VIRTUALENV_HOME', 'vendor/python'))
+    cache = abspath(os.environ.get('VENV_CACHE_HOME', 'vendor/cache'))
+
+    def __init__(self):
+        repo = git.Repo(self.home)
+        reader = repo.config_reader()
+        if not reader.has_section('pypi'):
+            print "Pypi is not set up yet."
+            sys.exit(1)
+        self.uid = reader.get('pypi', 'user')
+        self.password = reader.get('pypi', 'key')
+
+    def pip_fetch(self, name, version):
+        print "Install: %s ver. %s" % (name, version)
+
+        cmd = [
             "pip",
             'install',
             '--no-install',
@@ -38,32 +44,39 @@ def sync():
             'vendor/cache/',
             '--use-mirrors',
             "-i",
-            "https://{0}:{1}@repo.n-s.us/simple/".format(uid,password),
-            '-r',
-            'requirements.txt'
+            "https://{0}:{1}@repo.n-s.us/simple/".format(self.uid,
+                                                         self.password),
+            "%s==%s" % (name, version)
             ]
-    p2 = subprocess.Popen(cmd)
-    p2.communicate()
-
-    if os.path.exists(os.path.abspath('./test-requirements')):
-        cmd = [
-                'pip',
-                'install',
-                '--no-install',
-                '-d',
-                'vendor/cache/',
-                '--no-deps',
-                '-r',
-                'test-requirements.txt'
-                ]
-        p2 = Popen(cmd)
+        p2 = subprocess.Popen(cmd)
         p2.communicate()
+
+    def cached_package_file(self, name, version):
+        for pattern in ("%s-%s.tar.gz", "%s-%s.tgz", "%s-%s.zip"):
+            package_file = join(self.cache, pattern % (name, version))
+            if exists(package_file):
+                return package_file
+        return None
+
+    def sync(self):
+        if not exists(self.cache):
+            os.makedirs(self.cache)
+
+        for name, version in requirements("requirements.txt"):
+            if self.cached_package_file(name, version) is None:
+                self.pip_fetch(name, version)
+
+        if exists(abspath('./test-requirements')):
+            with open("test-requirements.txt", "r") as fp:
+                for package in fp:
+                    name, version = package.split("==")
+                    self.pip_fetch(name, version)
 
 
 def main():
     """docstring for main"""
     if len(sys.argv) == 1:
-        sync()
+        DependenciesTarget().sync()
     parser = argparse.ArgumentParser()
 
 if __name__ == '__main__':
