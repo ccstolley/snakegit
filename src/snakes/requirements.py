@@ -20,55 +20,11 @@ import os
 import re
 import sys
 import json
-import base64
 import tarfile
-import subprocess
-import requests
 
 
 SPLIT_REQS = re.compile("==|>=|>|<=|<")
 OPERATORS  = ["==", ">=", "<=", ">", "<"]
-
-
-def get_token():
-    """Retrieve the oauth token."""
-    token, _ = subprocess.Popen(
-            "git config --get github.token",
-            shell=True,
-            stdout=subprocess.PIPE).communicate()
-    return token.strip()
-
-
-def list_ns_repos(token):
-    """
-    _list_ns_repos_
-
-    Get a list of NS Repo names from the github API
-    """
-    url = "https://api.github.com/orgs/NarrativeScience/repos"
-    headers = {"Authorization": "token {0}".format(token)}
-    resp = requests.get(url, headers = headers)
-    data = json.loads(resp.text)
-    repos = [ d['name'] for d in data if d['private'] ]
-    return repos
-
-
-def get_requirements_old(repo, token):
-    """
-    _get_requirements_
-
-    Grab the requirements.txt file for the repo provided
-
-    """
-    req_url = "https://api.github.com/repos/NarrativeScience/"
-    req_url += repo
-    req_url += "/contents/requirements.txt"
-    resp = requests.get(req_url, headers = {
-        "Authorization" : "token {0}".format(token)
-        })
-    data = json.loads(resp.text)
-    reqs_text = base64.decodestring(data['content'])
-    return parse_requirements(reqs_text, repo)
 
 
 def get_requirements(dep):
@@ -99,7 +55,6 @@ def get_requirements(dep):
         msg +=  "expected to find: {0}".format(tarfile_path)
         print msg
         return []
-
 
 
 class VersionReq(object):
