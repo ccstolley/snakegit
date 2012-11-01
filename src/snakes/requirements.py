@@ -225,7 +225,7 @@ def check():
 def main():
     """main function to dispatch to function based on CL args"""
     if len(sys.argv) == 1:
-        print "either specify check or update"
+        print "Usage: git snake requirements [update, conflict, validate]"
         sys.exit(1)
     if sys.argv[1] == 'update':
         update()
