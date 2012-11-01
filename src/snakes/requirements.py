@@ -21,6 +21,7 @@ import re
 import sys
 import json
 import base64
+import tarfile
 import subprocess
 import requests
 
@@ -52,7 +53,7 @@ def list_ns_repos(token):
     return repos
 
 
-def get_requirements(repo, token):
+def get_requirements_old(repo, token):
     """
     _get_requirements_
 
@@ -68,6 +69,37 @@ def get_requirements(repo, token):
     data = json.loads(resp.text)
     reqs_text = base64.decodestring(data['content'])
     return parse_requirements(reqs_text, repo)
+
+
+def get_requirements(dep):
+    """
+    _get_requirements_
+
+    Look in vendor/cache to find a dependency requirement
+    and read the tarfile looking for a requirements file
+
+    """
+    tarfile_name = "{0}".format(dep.dependency)
+    tarfile_str = "{0}-{1}".format(tarfile_name,dep.version)
+    tarfile_path = "{0}.tar.gz".format(tarfile_str)
+
+    req_file = "{0}/requirements.txt".format(tarfile_str)
+    tarfile_path = os.path.join("vendor", "cache", tarfile_path)
+
+    if os.path.exists(tarfile_path):
+        tf = tarfile.open(tarfile_path)
+        if req_file not in tf.getnames():
+            print "no requirements.txt in", dep.dependency
+            return []
+        reqs = tf.extractfile(req_file)
+        content = reqs.read()
+        return parse_requirements(content, dep.dependency)
+    else:
+        msg = "Cant find tarfile for {0} {1} ".format(dep.dependency, dep.version)
+        msg +=  "expected to find: {0}".format(tarfile_path)
+        print msg
+        return []
+
 
 
 class VersionReq(object):
@@ -191,23 +223,22 @@ def build_req_table():
     Returns
 
     """
-    my_token = get_token()
-    our_repos = list_ns_repos(my_token)
     my_reqs = read_requirements_file()
-    dependencies = [ x.dependency for x in my_reqs if x.dependency in our_repos]
 
     req_table = {}
     for req in my_reqs:
         req_table.setdefault(req.dependency, [req] )
+    update_table = {}
+    update_table.update(req_table)
 
-    for dep in dependencies:
-        for dep_req in get_requirements(dep, my_token):
+    for dep, dep_instance in req_table.iteritems():
+        for dep_req in get_requirements(dep_instance[0]):
             req_name = dep_req.dependency
-            if req_name not in req_table:
-                req_table[req_name] = [ dep_req ]
-            if dep_req not in req_table[req_name]:
-                req_table[req_name].append(dep_req)
-    return req_table
+            if req_name not in update_table:
+                update_table[req_name] = [ dep_req ]
+            if dep_req not in update_table[req_name]:
+                update_table[req_name].append(dep_req)
+    return update_table
 
 
 def check():
@@ -221,6 +252,8 @@ def check():
     req_table = build_req_table()
     exit_code = 0
     for key, versions in req_table.iteritems():
+        msg = "dependency on {0} versions {1}".format(key, " ".join([ x.version for x in versions ]))
+        print msg
         if len(versions) > 1:
             msg = "***Version Conflict for {0}***\n".format(key)
             for version in versions:
