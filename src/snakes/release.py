@@ -2,8 +2,10 @@
 
 import argparse
 import ConfigParser
+import glob
 import os
 import os.path
+import re
 import shutil
 import subprocess
 import sys
@@ -17,13 +19,17 @@ venv = os.environ.get('VIRTUALENV_HOME', os.path.abspath('vendor/python'))
 cache = os.environ.get('VENV_CACHE_HOME', os.path.abspath('vendor/cache'))
 home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
+parser = ConfigParser.RawConfigParser()
+parser.read(os.path.abspath('snake.cfg'))
 
 def upload():
-    if os.path.exists(os.path.abspath('./setup.py')) \
-            and not os.path.exists(os.path.abspath('./_gb')):
+    if parser.has_option('release', 'app_and_lib'):
         upload_pypi()
-    if os.path.exists(os.path.abspath('./_gb')):
         upload_gearbox_app()
+    elif os.path.exists(os.path.abspath('./_gb')):
+        upload_gearbox_app()
+    elif os.path.exists(os.path.abspath('./setup.py')):
+        upload_pypi()
 
 def upload_pypi():
     repo = git.Repo(home)
@@ -39,8 +45,10 @@ def upload_pypi():
             print "Error uploading package"
 
 def upload_gearbox_app():
-    parser = ConfigParser.RawConfigParser()
-    parser.read(os.path.abspath('snake.cfg'))
+    args = argparse.ArgumentParser()
+    args.add_argument("-e", "--environment",
+            required=True, help="Which environment should this upload to?")
+    args = args.parse_args(sys.argv[2:])
     name = parser.get('release', 'name')
     version = parser.get('release', 'version')
     s3_conn = boto.connect_s3()
@@ -81,10 +89,20 @@ def gearbox_dist():
         "gearbox/gbtemplate/"]
     subprocess.call(cmd)
     cwd = os.getcwd()
+
+    if parser.has_option('release', 'flask_blueprint_root'):
+        for dir_name in ["static", "templates"]:
+            pattern = re.compile("src\/(.*)\/{0}".format(dir_name))
+            for path in glob.glob("src/*/{0}".format(dir_name)):
+                subdir = pattern.match(path).groups()[0]
+                trail = "{0}/{1}/".format(subdir, dir_name)
+                if not os.path.exists( "gearbox/{0}".format(subdir)):
+                    os.mkdir("gearbox/{0}".format(subdir))
+                command = ['rsync', '-arv', "src/{0}".format(trail), "gearbox/{0}".format(trail)]
+                subprocess.call(command)
+
     if not os.path.exists('./gearbox_dist'):
         os.mkdir('./gearbox_dist')
-    parser = ConfigParser.RawConfigParser()
-    parser.read(os.path.abspath('./snake.cfg'))
     os.chdir('gearbox')
     cmd = ["tar",
             "-czvf",
@@ -94,10 +112,13 @@ def gearbox_dist():
     os.chdir(cwd)
 
 def create():
-    if os.path.exists(os.path.abspath('./setup.py')) \
+    if parser.has_option('release', 'app_and_lib'):
+        python_sdist()
+        gearbox_dist()
+    elif os.path.exists(os.path.abspath('./setup.py')) \
             and not os.path.exists(os.path.abspath('./_gb')):
         python_sdist()
-    if os.path.exists(os.path.abspath('./_gb')):
+    elif os.path.exists(os.path.abspath('./_gb')):
         gearbox_dist()
 
 
