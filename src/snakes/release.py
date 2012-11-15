@@ -4,8 +4,8 @@ import argparse
 import ConfigParser
 import glob
 import os
-import os.path
 import re
+from os.path import abspath, exists, expanduser, join
 import shutil
 import subprocess
 import sys
@@ -15,12 +15,19 @@ import boto.s3.key
 import git
 import requests
 
-venv = os.environ.get('VIRTUALENV_HOME', os.path.abspath('vendor/python'))
-cache = os.environ.get('VENV_CACHE_HOME', os.path.abspath('vendor/cache'))
-home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
+venv = os.environ.get('VIRTUALENV_HOME', abspath('vendor/python'))
+cache = os.environ.get('VENV_CACHE_HOME', abspath('vendor/cache'))
+home = os.environ.get("SNAKEGIT_HOME", expanduser('~/.snakegit'))
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
 parser = ConfigParser.RawConfigParser()
 parser.read(os.path.abspath('snake.cfg'))
+
+def _python_bin():
+    '''Return path to virtualenv python'''
+    if not exists(venv):
+        msg = "Missing virtualenv: have you run 'build'? (looked in: {0})"
+        raise RuntimeError(msg.format(venv))
+    return abspath("{0}/bin/python".format(venv))
 
 def upload():
     if parser.has_option('release', 'app_and_lib'):
@@ -36,9 +43,12 @@ def upload_pypi():
     reader = repo.config_reader()
     uid = reader.get('pypi', 'user')
     key = reader.get('pypi', 'key')
-    upload_file = subprocess.check_output("ls -rt dist/|tail -1", shell=True).strip()
-    with open(os.path.abspath(os.path.join('dist',upload_file)), 'r') as f:
-        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key), files={'upload_file': (upload_file, f) }, verify=False)
+    filename_cmd = "ls -rt dist/|tail -1"
+    upload_file = subprocess.check_output(filename_cmd, shell=True).strip()
+    with open(abspath(join('dist',upload_file)), 'r') as f:
+        r = requests.post("https://repo.n-s.us/upload", auth=(uid, key),
+                          files={'upload_file': (upload_file, f) },
+                          verify=False)
         if r.status_code == 201:
             print "Uploaded successfully"
         else:
@@ -57,25 +67,21 @@ def upload_gearbox_app():
     key.key = '{0}/{1}.tar.gz'.format(name, version)
     key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
-    
+
 def python_sdist():
-    print "Building python source distribution" 
-    cmd = ["{0}/bin/python".format(venv),
-            "setup.py",
-            "sdist"]
+    print "Building python source distribution"
+    cmd = [_python_bin(), "setup.py", "sdist"]
     subprocess.call(cmd)
 
 def gearbox_dist():
     print "Build gearbox distribution"
-    cmd = ["{0}/bin/python".format(venv),
-            "setup.py",
-            "install"]
+    cmd = [_python_bin(), "setup.py", "install"]
     subprocess.call(cmd)
     cmd = ["{0}/bin/virtualenv".format(home),
             "--relocatable",
             venv]
     subprocess.call(cmd)
-    if os.path.exists('./gearbox'):
+    if exists('./gearbox'):
         shutil.rmtree('./gearbox')
     os.mkdir('./gearbox')
     cmd = ["rsync",
@@ -101,12 +107,13 @@ def gearbox_dist():
                 command = ['rsync', '-arv', "src/{0}".format(trail), "gearbox/{0}".format(trail)]
                 subprocess.call(command)
 
-    if not os.path.exists('./gearbox_dist'):
+    if not exists('./gearbox_dist'):
         os.mkdir('./gearbox_dist')
     os.chdir('gearbox')
+    version = parser.get('release', 'version')
     cmd = ["tar",
             "-czvf",
-            "../gearbox_dist/{0}.tar.gz".format(parser.get('release', 'version')),
+            "../gearbox_dist/{0}.tar.gz".format(version),
             "."]
     subprocess.call(cmd)
     os.chdir(cwd)
@@ -115,12 +122,10 @@ def create():
     if parser.has_option('release', 'app_and_lib'):
         python_sdist()
         gearbox_dist()
-    elif os.path.exists(os.path.abspath('./setup.py')) \
+    elif exists(os.path.abspath('./setup.py')) \
             and not os.path.exists(os.path.abspath('./_gb')):
         python_sdist()
-    elif os.path.exists(os.path.abspath('./_gb')):
-        gearbox_dist()
-
+    elif exists(os.path.abspath('./_gb')):
 
 def main():
     """docstring for main"""
