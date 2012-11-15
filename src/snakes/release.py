@@ -126,6 +126,7 @@ def create():
             and not os.path.exists(os.path.abspath('./_gb')):
         python_sdist()
     elif exists(os.path.abspath('./_gb')):
+        gearbox_dist()
 
 def main():
     """docstring for main"""
