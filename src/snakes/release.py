@@ -45,14 +45,28 @@ def upload_pypi():
     key = reader.get('pypi', 'key')
     filename_cmd = "ls -rt dist/|tail -1"
     upload_file = subprocess.check_output(filename_cmd, shell=True).strip()
-    with open(abspath(join('dist',upload_file)), 'r') as f:
+    with open(abspath(join('dist', upload_file)), 'r') as f:
         r = requests.post("https://repo.n-s.us/upload", auth=(uid, key),
-                          files={'upload_file': (upload_file, f) },
+                          files={'upload_file': (upload_file, f)},
                           verify=False)
         if r.status_code == 201:
             print "Uploaded successfully"
         else:
             print "Error uploading package"
+
+
+def get_architecture():
+    ''' Creates string representing system architecture
+        Built to match RUBY_PLATFORM
+    '''
+    if os.uname[0].lower == "darwin":
+        architecture = "%s-%s%s" % (os.uname()[4], os.uname()[0].lower(), os.uname()[2])
+    elif os.uname[0].lower == "linux":
+        architecture = "%s-%s" % (os.uname()[4], os.uname()[0].lower())
+    else:
+        raise RuntimeError("Unrecognized platform %s" % os.uname()[0].lower())
+    return architecture
+
 
 def upload_gearbox_app():
     args = argparse.ArgumentParser()
@@ -60,18 +74,21 @@ def upload_gearbox_app():
             required=True, help="Which environment should this upload to?")
     args = args.parse_args(sys.argv[2:])
     name = parser.get('release', 'name')
+    architecture = get_architecture()
     version = parser.get('release', 'version')
     s3_conn = boto.connect_s3()
     bucket = s3_conn.get_bucket(bucket_name)
     key = boto.s3.key.Key(bucket)
-    key.key = '{0}/{1}.tar.gz'.format(name, version)
+    key.key = '{0}/{1}-{2}.tar.gz'.format(name, architecture, version)
     key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
+
 
 def python_sdist():
     print "Building python source distribution"
     cmd = [_python_bin(), "setup.py", "sdist"]
     subprocess.call(cmd)
+
 
 def gearbox_dist():
     print "Build gearbox distribution"
