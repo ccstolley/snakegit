@@ -37,7 +37,9 @@ Here is a list of the current aliases provided by SnakeGit
 
 * build          - build a Python project (install all of its
     dependencies locally)
-* dev-clean      - clean up a Python project 
+* bump           - bump the version number of the package
+* deps           - download dependencies from PyPI and cache them locally
+* clean      - clean up a Python project 
 * gearbox        - run GearBox commands (more later)
 * lint           - run Python linting tools
 * pullreq        - Create a Github pull request
@@ -48,12 +50,15 @@ Here is a list of the current aliases provided by SnakeGit
 * sphinx         - Generate Sphinx documentation
 * test           - Run Python test and coverage tools
 
+All of these aliases need to be prefaced with `snake`; to run the tests, for
+example, you would input `git snake test`.
+
 All of these tools are designed to be run from a project
 directory. For example, if you are ready to upload ns_utils
 to pypi you would issue the following commands:
 
-    ~/src/ns_utils -) > git sdist
-    ~/src/ns_utils -) > git upload-package
+    ~/src/ns_utils -) > git snake sdist
+    ~/src/ns_utils -) > git snake upload-package
 
 and the source distribution would be build and then uploaded
 to the pypi server.
@@ -115,26 +120,42 @@ Task Documentation
 ==========================
 
 
-git build
+git snake build
 ---------------------
 
 Creates a Virtualenv in `pwd`/vendor/python, then installs the requirements as
-defined by the requirements.txt
+defined by the requirements.txt.  If the dependencies are not already cached
+locally, you may need to run `git snake deps`
 
 
-git dev-clean
+git snake bump
+-------------------
+
+Increases the version number of the package.  The options are as follows:
+
+    usage: bump [-h] (-u | -m | -M) [-s]
+
+    optional arguments:
+      -h, --help      show this help message and exit
+      -u, --micro     bump the micro version
+      -m, --minor     bump the minor version
+      -M, --major     bump the major version
+      -s, --snapshot  This is a snapshot version
+
+
+git snake clean
 --------------------
 
 Remove all build artifacts as well as the local Virtualenv
 
 
-git gearbox
+git snake gearbox
 -------------------
 
 This will be documented elsewhere
 
 
-git lint
+git snake lint
 ------------------
 
 Run various linting tools against the current project.  Currently, this supports
@@ -151,12 +172,12 @@ PyLint, Pep8 and PyFlakes. The options are as follows:
 Some linters require the directory to be set and others require the module. To
 be safe, you can supply both the -s and -m options like this:
 
-    ~/src/ns_utils -) > git lint -l -s src -m pypi
+    ~/src/ns_utils -) > git snake lint -l -s src -m pypi
 
 This will run PyLint on the pypi module in the ./src directory 
 
 
-git pullreq
+git snake pullreq
 --------------------------
 
 Creates a GitHub pull request for the currently checked out branch.
@@ -180,7 +201,7 @@ branches have the same name.
 
 example run:
 
-    git pullreq --title 'print url for created pull request' \
+    git snake pullreq --title 'print url for created pull request' \
             --body 'UI imporvement for pullreq -- does this make sense to you guys?' \
             --to turtlebender,waltaskew \
     Counting objects: 7, done.
@@ -202,34 +223,34 @@ turtlebender and waltaskew were notified of the pull request using the
 The url for the new GitHub pull request was then printed out.
 
 
-git sdist
+git snake sdist
 -------------------------
 
 Simply calls python setup.py sdist in the current environment
 
 
-git snakeupdate
+git snake snakeupdate
 ------------------------
 
 Updates your SnakeGit install.  Doesn't take any options, but might
 require additional configuration.
 
 
-git snakeinit
+git snake snakeinit
 -----------------------
 
 Configure a git project for use with SnakeGit.  Configures .gitignores
 and vendor cache directories
 
 
-git sphinx
+git snake sphinx
 -----------------------
 
 Generate Sphinx documentation (including apidocs).  Currently, requires
 a `pwd`/docs/source directory to exist and contain the conf.py for Sphinx
 
 
-git test
+git snake test
 ----------------------
 
 Run a set of Python tests with optional coverage checks.  The usage is:
@@ -243,7 +264,7 @@ Run a set of Python tests with optional coverage checks.  The usage is:
     -w=<dir>              Which directory holds the tests
 
 
-git upload
+git snake upload
 --------------------
 
 Upload the project to our PyPi server.  This requires that you have already
