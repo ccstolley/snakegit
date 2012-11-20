@@ -18,3 +18,4 @@ distribute*.tar.gz
 test_reports
 .coverage
 *.bak
+vendor/cache/http*
