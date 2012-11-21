@@ -35,11 +35,16 @@ def main():
     pip = sh.Command("{0}/bin/pip".format(venv))
     with open('requirements.txt', 'r') as handle:
         for req in handle.readlines():
-            for line in pip.install(req, find_links="file://{0}".format(cache),
-                    index_url="https://{0}:{1}@repo.n-s.us/simple".format(uid, password), 
-                    build="build", download_cache=cache, exists_action="i",
-                    _iter=True):
-                sys.stdout.write(line)
+            if not req.startswith("#"):
+                for line in pip.install(req, find_links="file://{0}".format(cache),
+                        index_url="https://{0}:{1}@repo.n-s.us/simple".format(uid, password), 
+                        build="build", download_cache=cache, exists_action="i",
+                        _iter=True):
+                    sys.stdout.write(line)
+    python = sh.Command("{0}/bin/python".format(venv))
+    for line in python('setup.py', 'develop'):
+        sys.stdout.write(line)
+
     sh.rm("-rf", "build")
 
 if __name__ == '__main__':
