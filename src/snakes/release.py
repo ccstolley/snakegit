@@ -55,10 +55,6 @@ def upload_pypi():
             print "Error uploading package"
 
 def upload_gearbox_app():
-    args = argparse.ArgumentParser()
-    args.add_argument("-e", "--environment",
-            required=True, help="Which environment should this upload to?")
-    args = args.parse_args(sys.argv[2:])
     name = parser.get('release', 'name')
     version = parser.get('release', 'version')
     s3_conn = boto.connect_s3()
