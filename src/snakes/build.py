@@ -41,6 +41,10 @@ def main():
                         build="build", download_cache=cache, exists_action="i",
                         _iter=True):
                     sys.stdout.write(line)
+    python = sh.Command("{0}/bin/python".format(venv))
+    for line in python('setup.py', 'develop'):
+        sys.stdout.write(line)
+
     sh.rm("-rf", "build")
 
 if __name__ == '__main__':
