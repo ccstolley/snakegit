@@ -1,2 +1,5 @@
+title: Snakegit Docs
+site: /
 url: https://snakegit.github.com
-
+markdown: rdiscount
+pygments: true
