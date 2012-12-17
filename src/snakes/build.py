@@ -9,6 +9,10 @@ import sh
 
 from pkg_resources import Requirement, WorkingSet
 
+def version_in_working_set(requirement, working_set):
+    installed = working_set.by_key.get(requirement.key)
+    return installed is not None and installed in requirement
+
 def find_required(venv, file_):
     pkgdir = os.path.join(os.path.abspath(venv), "lib/python2.7/site-packages")
     working_set = WorkingSet([pkgdir])
@@ -16,7 +20,7 @@ def find_required(venv, file_):
         required = [Requirement.parse(req) for req in fp \
                     if not req.startswith("#")]
         return [r for r in required \
-                if not working_set.by_key.get(r.key)]
+                if not version_in_working_set(r, working_set)]
 
 def install_required(venv, cache, index, requirements):
     pip = sh.Command("{0}/bin/pip".format(venv))
