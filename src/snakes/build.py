@@ -7,6 +7,26 @@ import sys
 import git
 import sh
 
+from pkg_resources import Requirement, WorkingSet
+
+def find_required(venv, file_):
+    pkgdir = os.path.join(os.path.abspath(venv), "lib/python2.7/site-packages")
+    working_set = WorkingSet([pkgdir])
+    with open(file_, 'r') as fp:
+        required = [Requirement.parse(req) for req in fp \
+                    if not req.startswith("#")]
+        return [r for r in required \
+                if not working_set.by_key.get(r.key)]
+
+def install_required(venv, cache, index, requirements):
+    pip = sh.Command("{0}/bin/pip".format(venv))
+    print "Installing: %s" % unicode(requirements)
+    cache = "file://{0}".format(cache)
+    for line in pip.install(*requirements, find_links=cache, index_url=index,
+                            build="build", download_cache=cache,
+                            exists_action="i", _iter=True):
+        sys.stdout.write(line)
+
 def main():
     """docstring for main"""
     home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
@@ -23,24 +43,19 @@ def main():
         for line in virtualenv(venv, '--distribute', prompt="({0})".format(os.getcwd().split('/')[-1]),
                 _iter=True):
             sys.stdout.write(line)
-            
+
     repo = git.Repo(home)
     reader = repo.config_reader()
     if not reader.has_section('pypi'):
         print "Pypi is not set up yet."
         sys.exit(1)
-    uid = reader.get('pypi', 'user')
-    password = reader.get('pypi', 'key')
 
-    pip = sh.Command("{0}/bin/pip".format(venv))
-    with open('requirements.txt', 'r') as handle:
-        for req in handle.readlines():
-            if not req.startswith("#"):
-                for line in pip.install(req, find_links="file://{0}".format(cache),
-                        index_url="https://{0}:{1}@repo.n-s.us/simple".format(uid, password), 
-                        build="build", download_cache=cache, exists_action="i",
-                        _iter=True):
-                    sys.stdout.write(line)
+    need_install = find_required(venv, "requirements.txt")
+    if need_install:
+        uid = reader.get('pypi', 'user')
+        password = reader.get('pypi', 'key')
+        index = "https://{0}:{1}@repo.n-s.us/simple".format(uid, password)
+        install_required(venv, cache, index, need_install)
     python = sh.Command("{0}/bin/python".format(venv))
     for line in python('setup.py', 'develop'):
         sys.stdout.write(line)
