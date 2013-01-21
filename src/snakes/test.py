@@ -58,7 +58,7 @@ def unit(args):
 
     args = parser.parse_args(args)
 
-    nose_kwargs = {} 
+    nose_kwargs = {}
     nose_args = []
     if os.path.exists('test-requirements.txt'):
         pip = sh.Command('{0}/bin/pip'.format(venv))
@@ -86,7 +86,7 @@ def unit(args):
     new_env = os.environ.copy()
     new_env["PYTHONPATH"] = ':'.join(python_path)
     nose = sh.Command("{0}/bin/nosetests".format(home))
-    
+
     for arg in [ args.xunit, args.coverage, args.cover_xml ]:
         nose_args.extend(arg['args'])
         nose_kwargs.update(arg['kwargs'])
@@ -98,8 +98,14 @@ def unit(args):
     nose_args.append(args.directory)
     nose_kwargs['_env'] = new_env
     nose_kwargs['_err'] = sys.stdout
-    output = nose(*nose_args, **nose_kwargs)
-    return output.exit_code
+    try:
+        output = nose(*nose_args, **nose_kwargs)
+        return output.exit_code
+    except sh.ErrorReturnCode:
+        # Don't crash snake when an error is raised.
+        return 1
+
+
 
 
 def functional():
