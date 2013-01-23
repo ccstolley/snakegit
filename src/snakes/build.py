@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import os
 import os.path
 import sys
@@ -8,6 +9,8 @@ import git
 import sh
 
 from pkg_resources import Requirement, WorkingSet
+
+EMPTY_DEFAULT = {'args' : []}
 
 def version_in_working_set(requirement, working_set):
     installed = working_set.by_key.get(requirement.key)
@@ -33,6 +36,17 @@ def install_required(venv, cache, index, requirements):
 
 def main():
     """docstring for main"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--site-packages',
+                        action='store_const',
+                        const={
+                            'args' : ['--system-site-packages']
+                        },
+                        default=EMPTY_DEFAULT,
+                        help='Include Site packages in the venv.')
+    args = parser.parse_args()
+    venv_args = args['args']
+    venv_args.append('--distribute')
     home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
     virtualenv = sh.Command("{0}/bin/virtualenv".format(home))
     if 'VIRTUALENV_HOME' in os.environ:
@@ -44,7 +58,7 @@ def main():
     else:
         cache = os.path.abspath('vendor/cache')
     if not os.path.exists(os.path.join(venv, 'bin', 'python')):
-        for line in virtualenv(venv, '--distribute', prompt="({0})".format(os.getcwd().split('/')[-1]),
+        for line in virtualenv(venv, venv_args, prompt="({0})".format(os.getcwd().split('/')[-1]),
                 _iter=True):
             sys.stdout.write(line)
 
