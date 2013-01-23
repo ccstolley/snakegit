@@ -45,7 +45,7 @@ def main():
                         default=EMPTY_DEFAULT,
                         help='Include Site packages in the venv.')
     args = parser.parse_args()
-    venv_args = args['args']
+    venv_args = args.site_packages['args']
     venv_args.append('--distribute')
     home = os.environ.get("SNAKEGIT_HOME", os.path.expanduser('~/.snakegit'))
     virtualenv = sh.Command("{0}/bin/virtualenv".format(home))
