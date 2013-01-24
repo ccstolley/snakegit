@@ -81,8 +81,17 @@ def unit(args):
         candidate_path = '{0}/lib/python{1}/site-packages'.format(venv, version)
         if os.path.exists(candidate_path):
             python_path.append(candidate_path)
+            python_version = version
             break
-
+    site_packages = "{0}/lib/python{1}/no-global-site-packages.txt".foramt(
+        venv, python_version)
+    prefix_file = "{0}/lib/python{1}/orig-prefix.txt".foramt(venv,
+                                                             python_version)
+    if not os.path.exists(site_packages):
+        with open(prefix_file) as handle:
+            prefix = handle.readline()
+            python_path.append("{0}/lib/python{1}/site-packages".format(
+                prefix, python_version))
     new_env = os.environ.copy()
     new_env["PYTHONPATH"] = ':'.join(python_path)
     nose = sh.Command("{0}/bin/nosetests".format(home))
