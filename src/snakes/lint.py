@@ -21,16 +21,21 @@ def lint(args):
     parser.add_argument('-r', '--rcfile',
                        help="Location of pylintrc file",
                        default='etc/pylintrc')
-    parser.add_argument('directory',
+    parser.add_argument('-d', '--directory',
                         help='Location of source',
                         default='src')
+    parser.add_argument("-f", "--format",
+                       help="Pylint format",
+                       default="parseable")
     args = parser.parse_args(args)
     pylint_args = [args.directory]
-    pylint_kwargs = {'rcfile' : args.rcfile}
+    pylint_kwargs = {'rcfile' : args.rcfile,
+                     'output-format' : args.format}
     python_path = [
             '.',
             'src',
             ]
+    python_version = ""
     for version in ['2.6', '2.7']:
         candidate_path = '{0}/lib/python{1}/site-packages'.format(venv, version)
         if os.path.exists(candidate_path):
