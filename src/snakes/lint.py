@@ -47,10 +47,11 @@ def lint(args):
     prefix_file = "{0}/lib/python{1}/orig-prefix.txt".format(venv,
                                                              python_version)
     if not os.path.exists(site_packages):
-        with open(prefix_file) as handle:
-            prefix = handle.readline()
-            python_path.append("{0}/lib/python{1}/site-packages".format(
-                prefix, python_version))
+        if os.path.exists(prefix_file):
+            with open(prefix_file) as handle:
+                prefix = handle.readline()
+                python_path.append("{0}/lib/python{1}/site-packages".format(
+                    prefix, python_version))
     new_env = os.environ.copy()
     new_env["PYTHONPATH"] = ':'.join(python_path)
     pylint = sh.Command("{0}/bin/pylint".format(home))
