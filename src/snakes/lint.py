@@ -60,10 +60,13 @@ def lint(args):
     pylint_kwargs['_env'] = new_env
     pylint_kwargs['_err'] = sys.stdout
     try:
-        output = pylint(*nose_args, **nose_kwargs)
+        output = pylint(*pylint_args, **pylint_kwargs)
+        print "GOODBYE"
+        print output
         return output.exit_code
-    except sh.ErrorReturnCode:
+    except sh.ErrorReturnCode as err:
         # Don't crash snake when an error is raised.
+        print err.stdout
         return 1
 
 
