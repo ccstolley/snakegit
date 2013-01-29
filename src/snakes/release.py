@@ -5,6 +5,7 @@ import glob
 import os
 import re
 from os.path import abspath, exists, expanduser, join
+import sh
 import shutil
 import subprocess
 import sys
@@ -38,6 +39,7 @@ def upload():
         upload_gearbox_app()
     elif os.path.exists(os.path.abspath('./setup.py')):
         upload_pypi()
+    upload_release_tag()
 
 
 def upload_pypi():
@@ -69,6 +71,12 @@ def upload_gearbox_app():
     key.key = '{0}/{1}.tar.gz'.format(name, version)
     key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
+
+
+def upload_release_tag():
+    version = parser.get('release', 'version')
+    sh.git('tag', version)
+    sh.git('push', 'origin', version)
 
 
 def python_sdist():
