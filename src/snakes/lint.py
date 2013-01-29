@@ -18,7 +18,7 @@ def lint(args):
     cache = os.environ.get('VENV_CACHE_HOME', 'vendor/cache/')
     home = os.environ.get('SNAKEGIT_HOME', os.path.expanduser('~/.snakegit'))
     parser = argparse.ArgumentParser()
-    paser.add_argument('-r', '--rcfile',
+    parser.add_argument('-r', '--rcfile',
                        help="Location of pylintrc file",
                        default='etc/pylintrc')
     parser.add_argument('directory',
