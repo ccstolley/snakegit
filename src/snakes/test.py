@@ -94,7 +94,7 @@ def unit(args):
                 prefix, python_version))
     new_env = os.environ.copy()
     new_env["PYTHONPATH"] = ':'.join(python_path)
-    nose = sh.Command("{0}/bin/nosetests".format(home))
+    nose = sh.Command("{0}/bin/nosetests".format(venv))
 
     for arg in [ args.xunit, args.coverage, args.cover_xml ]:
         nose_args.extend(arg['args'])
