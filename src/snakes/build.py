@@ -33,8 +33,9 @@ def find_required(venv, file_):
                 requested.append(requirement)
 
     if not nose_fulfilled:
-        if not version_in_working_set('nose==1.2.1', working_set):
-            requested.append('nose==1.2.1')
+        requirement = Requirement.parse('nose==1.2.1')
+        if not version_in_working_set(requirement, working_set):
+            requested.append(requirement)
     return requested
 
 def install_required(venv, cache, index, requirements):
