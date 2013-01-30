@@ -22,8 +22,11 @@ def find_required(venv, file_):
     with open(file_, 'r') as fp:
         required = [Requirement.parse(req) for req in fp \
                     if not req.startswith("#")]
-        return [r for r in required \
-                if not version_in_working_set(r, working_set)]
+        requested =  [r for r in required \
+                      if not version_in_working_set(r, working_set)]
+    if not version_in_working_set('nose==1.2.1', working_set):
+        requested.append('nose==1.2.1')
+    return requested
 
 def install_required(venv, cache, index, requirements):
     pip = sh.Command("{0}/bin/pip".format(venv))
