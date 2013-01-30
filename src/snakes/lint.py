@@ -54,7 +54,7 @@ def lint(args):
                     prefix, python_version))
     new_env = os.environ.copy()
     new_env["PYTHONPATH"] = ':'.join(python_path)
-    pylint = sh.Command("{0}/bin/pylint".format(home))
+    pylint = sh.Command("{0}/bin/pylint".format(venv))
 
 
     pylint_kwargs['_env'] = new_env

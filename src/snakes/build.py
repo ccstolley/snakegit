@@ -19,9 +19,10 @@ def version_in_working_set(requirement, working_set):
 def find_required(venv, file_):
     pkgdir = os.path.join(os.path.abspath(venv), "lib/python2.7/site-packages")
     working_set = WorkingSet([pkgdir])
-    #We need a version of nose, preferably our version, but if someone
+    #We need a version of nose & pylint, preferably our version, but if someone
     # insists on adding it to requirements.txt, we should accomodate them.
     nose_fulfilled = False
+    pylint_fulfilled = False
     with open(file_, 'r') as fp:
         required = [Requirement.parse(req) for req in fp \
                     if not req.startswith("#")]
@@ -29,11 +30,17 @@ def find_required(venv, file_):
         for requirement in required:
             if requirement.project_name == 'nose':
                 nose_fulfilled = True
+            if requirement.project_name == 'pylint':
+                pylint_fulfilled = True
             if not version_in_working_set(requirement, working_set):
                 requested.append(requirement)
 
     if not nose_fulfilled:
         requirement = Requirement.parse('nose==1.2.1')
+        if not version_in_working_set(requirement, working_set):
+            requested.append(requirement)
+    if not pylint_fulfilled:
+        requirement = Requirement.parse('pylint==0.26.0')
         if not version_in_working_set(requirement, working_set):
             requested.append(requirement)
     return requested
