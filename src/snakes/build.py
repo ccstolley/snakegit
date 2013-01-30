@@ -27,7 +27,7 @@ def find_required(venv, file_):
                     if not req.startswith("#")]
         requested = []
         for requirement in required:
-            if requirement == 'nose' or requirement[:6] == 'nose==':
+            if requirement.project_name == 'nose':
                 nose_fulfilled = True
             if not version_in_working_set(requirement, working_set):
                 requested.append(requirement)
