@@ -10,13 +10,14 @@ import sys
 import urlparse
 
 import git
+import reqfileparser
 
 
 def requirements(filename):
     "Generator for iterating the contents of a requirements file"
     with open(filename, "r") as fp:
-        for package in fp:
-            yield package.strip().split("==")
+        for package in reqfileparser.parse(fp):
+            yield package['name'], package['version']
 
 class DependenciesTarget(object):
 
