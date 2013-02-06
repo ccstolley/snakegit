@@ -3,11 +3,8 @@
 import argparse
 import os
 from os.path import abspath, exists, expanduser, join
-import shutil
 import subprocess
-import re
 import sys
-import urlparse
 
 import git
 import reqfileparser
@@ -17,7 +14,8 @@ def requirements(filename):
     "Generator for iterating the contents of a requirements file"
     with open(filename, "r") as fp:
         for package in reqfileparser.parse(fp):
-            yield package['name'], package['version']
+            yield package['name'], package['operator'], package['version']
+
 
 class DependenciesTarget(object):
 
@@ -34,7 +32,7 @@ class DependenciesTarget(object):
         self.uid = reader.get('pypi', 'user')
         self.password = reader.get('pypi', 'key')
 
-    def pip_fetch(self, name, version):
+    def pip_fetch(self, name, version, operator="=="):
         print "Install: %s ver. %s" % (name, version)
 
         cmd = [
@@ -47,7 +45,7 @@ class DependenciesTarget(object):
             "-i",
             "https://{0}:{1}@repo.n-s.us/simple/".format(self.uid,
                                                          self.password),
-            "%s==%s" % (name, version)
+            "".join([name, operator, version])
             ]
         p2 = subprocess.Popen(cmd)
         p2.communicate()
@@ -63,9 +61,9 @@ class DependenciesTarget(object):
         if not exists(self.cache):
             os.makedirs(self.cache)
 
-        for name, version in requirements("requirements.txt"):
+        for name, operator, version in requirements("requirements.txt"):
             if self.cached_package_file(name, version) is None:
-                self.pip_fetch(name, version)
+                self.pip_fetch(name, version, operator)
 
         if exists(abspath('./test-requirements')):
             with open("test-requirements.txt", "r") as fp:
@@ -78,7 +76,8 @@ def main():
     """docstring for main"""
     if len(sys.argv) == 1:
         DependenciesTarget().sync()
-    parser = argparse.ArgumentParser()
+    argparse.ArgumentParser()
+
 
 if __name__ == '__main__':
     main()
