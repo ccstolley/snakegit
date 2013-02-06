@@ -60,6 +60,9 @@ def upload_pypi():
             print "Uploaded successfully"
         else:
             print "Error uploading package"
+            print r.status_code
+            print r.text
+            sys.exit(1)
 
 
 def upload_gearbox_app():
