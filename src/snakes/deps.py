@@ -14,7 +14,7 @@ def requirements(filename):
     "Generator for iterating the contents of a requirements file"
     with open(filename, "r") as fp:
         for package in reqfileparser.parse(fp):
-            yield package['name'], package.get('operator', ''), package.get('version')
+            yield package['name'], package.get('operator', ''), package.get('version', '')
 
 
 class DependenciesTarget(object):
