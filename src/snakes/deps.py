@@ -16,11 +16,9 @@ REQ_PATTERN = re.compile(r"(?P<name>.+)(?P<operator>[><=~+]=)(?P<version>.*)")
 def requirements(filename):
     "Generator for iterating the contents of a requirements file"
     with open(filename, "r") as fp:
-        _requirements(fp.read())
-
-
-def _requirements(requirements_string):
-    for package in requirements_string.strip().split("\n"):
+        reqs = fp.read()
+        print reqs
+    for package in reqs.strip().split("\n"):
         yield REQ_PATTERN.match(package).groupdict()
 
 
@@ -70,9 +68,9 @@ class DependenciesTarget(object):
         if not exists(self.cache):
             os.makedirs(self.cache)
 
-        for requirement in requirements("requirements.txt"):
-            if self.cached_package_file(**requirements) is None:
-                self.pip_fetch(**requirements)
+        for req in requirements("requirements.txt"):
+            if self.cached_package_file(**req) is None:
+                self.pip_fetch(**req)
 
         if exists(abspath('./test-requirements')):
             with open("test-requirements.txt", "r") as fp:
