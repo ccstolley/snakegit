@@ -17,7 +17,6 @@ def requirements(filename):
     "Generator for iterating the contents of a requirements file"
     with open(filename, "r") as fp:
         reqs = fp.read()
-        print reqs
     for package in reqs.strip().split("\n"):
         yield REQ_PATTERN.match(package).groupdict()
 
