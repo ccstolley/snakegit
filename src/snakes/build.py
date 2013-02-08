@@ -10,11 +10,13 @@ import sh
 
 from pkg_resources import Requirement, WorkingSet
 
-EMPTY_DEFAULT = {'args' : []}
+EMPTY_DEFAULT = {'args': []}
+
 
 def version_in_working_set(requirement, working_set):
     installed = working_set.by_key.get(requirement.key)
     return installed is not None and installed in requirement
+
 
 def find_required(venv, file_):
     pkgdir = os.path.join(os.path.abspath(venv), "lib/python2.7/site-packages")
@@ -45,14 +47,16 @@ def find_required(venv, file_):
             requested.append(requirement)
     return requested
 
+
 def install_required(venv, cache, index, requirements):
     pip = sh.Command("{0}/bin/pip".format(venv))
     print "Installing: %s" % unicode(requirements)
     cache = "file://{0}".format(cache)
     for line in pip.install(*requirements, find_links=cache, index_url=index,
                             build="build", download_cache=cache,
-                            exists_action="i", _iter=True):
+                            exists_action="i", _iter=True, upgrade=True):
         sys.stdout.write(line)
+
 
 def main():
     """docstring for main"""
@@ -60,7 +64,7 @@ def main():
     parser.add_argument('-s', '--site-packages',
                         action='store_const',
                         const={
-                            'args' : ['--system-site-packages']
+                            'args': ['--system-site-packages']
                         },
                         default=EMPTY_DEFAULT,
                         help='Include Site packages in the venv.')

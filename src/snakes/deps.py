@@ -2,23 +2,11 @@
 
 import argparse
 import os
-from os.path import abspath, exists, expanduser, join
-import re
+from os.path import abspath, exists, expanduser
 import subprocess
 import sys
 
 import git
-
-
-REQ_PATTERN = re.compile(r"(?P<name>.+)(?P<operator>[><=~+]=)(?P<version>.*)")
-
-
-def requirements(filename):
-    "Generator for iterating the contents of a requirements file"
-    with open(filename, "r") as fp:
-        reqs = fp.read()
-    for package in reqs.strip().split("\n"):
-        yield REQ_PATTERN.match(package).groupdict()
 
 
 class DependenciesTarget(object):
@@ -36,9 +24,7 @@ class DependenciesTarget(object):
         self.uid = reader.get('pypi', 'user')
         self.password = reader.get('pypi', 'key')
 
-    def pip_fetch(self, name, version, operator):
-        print "Install: %s ver. %s" % (name, version)
-
+    def pip_fetch(self, fname):
         cmd = [
             "pip",
             'install',
@@ -49,33 +35,18 @@ class DependenciesTarget(object):
             "-i",
             "https://{0}:{1}@repo.n-s.us/simple/".format(self.uid,
                                                          self.password),
-            "".join([name, operator, version])
+            "-r %s" % fname
             ]
         p2 = subprocess.Popen(cmd)
         p2.communicate()
-
-    def cached_package_file(self, name, version, operator):
-        ''' Operator isn't currently used '''
-
-        for pattern in ("%s-%s.tar.gz", "%s-%s.tgz", "%s-%s.zip"):
-            package_file = join(self.cache, pattern % (name, version))
-            if exists(package_file):
-                return package_file
-        return None
 
     def sync(self):
         if not exists(self.cache):
             os.makedirs(self.cache)
 
-        for req in requirements("requirements.txt"):
-            if self.cached_package_file(**req) is None:
-                self.pip_fetch(**req)
-
+        self.pip_fetch("requirements.txt")
         if exists(abspath('./test-requirements')):
-            with open("test-requirements.txt", "r") as fp:
-                for package in fp:
-                    name, version = package.split("==")
-                    self.pip_fetch(name, version, "==")
+            self.pip_fetch("test-requirements.txt")
 
 
 def main():
