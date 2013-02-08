@@ -35,7 +35,7 @@ class DependenciesTarget(object):
             "-i",
             "https://{0}:{1}@repo.n-s.us/simple/".format(self.uid,
                                                          self.password),
-            "-r %s" % fname
+            "-r", fname
             ]
         p2 = subprocess.Popen(cmd)
         p2.communicate()
