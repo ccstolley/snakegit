@@ -32,6 +32,7 @@ def _python_bin():
 
 
 def upload():
+    upload_release_tag()
     if parser.has_option('release', 'app_and_lib'):
         upload_pypi()
         upload_gearbox_app()
@@ -39,7 +40,6 @@ def upload():
         upload_gearbox_app()
     elif os.path.exists(os.path.abspath('./setup.py')):
         upload_pypi()
-    upload_release_tag()
 
 
 def upload_pypi():
