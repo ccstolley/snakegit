@@ -21,9 +21,9 @@ scripts = [
     "deps=snakes.deps:main",
     "lint=snakes.lint:main",
     "pullreq=snakes.pullreq:main",
-    "init = snakes.init_project:main",
-    "exec = snakes.execute:main",
-    "bash_the_snake = snakes.bash_the_snake:main"
+    "init=snakes.init_project:main",
+    "exec=snakes.execute:main",
+    "bash_the_snake=snakes.bash_the_snake:main"
 ]
 
 
