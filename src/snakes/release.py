@@ -98,9 +98,11 @@ def upload_gearbox_app():
 
 
 def upload_release_tag():
+    name = parser.get('release', 'name')
     version = parser.get('release', 'version')
-    sh.git('tag', version)
-    sh.git('push', 'origin', version)
+    tag = "%s/%s" % (name, version)
+    sh.git('tag', tag)
+    sh.git('push', 'origin', tag)
 
 
 def python_sdist():
