@@ -6,25 +6,7 @@ import setuptools
 config = ConfigParser.RawConfigParser()
 config.read("snake.cfg")
 
-
-scripts = [
-    "build =snakes.build:main",
-    "bump =snakes.bump:main",
-    "clean=snakes.clean:main",
-    "test=snakes.test:main",
-    "release=snakes.release:main",
-    "sync_deps=snakes.update_deps:main",
-    "snake=snakes.main:main",
-    "nyan=snakes.nyan:main",
-    "config=snakes.config:main",
-    "update=snakes.update:main",
-    "deps=snakes.deps:main",
-    "lint=snakes.lint:main",
-    "pullreq=snakes.pullreq:main",
-    "init=snakes.init_project:main",
-    "exec=snakes.execute:main",
-    "bash_the_snake=snakes.bash_the_snake:main"
-]
+scripts = ["{0}={1}".format(key, config.get('commands', key)) for key in config.options("commands")]
 
 
 with open("requirements.txt", 'r') as f:
