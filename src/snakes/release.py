@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 import ConfigParser
 import glob
+import fnmatch
 import os
 import re
 from os.path import abspath, exists, expanduser, join
@@ -21,6 +20,28 @@ home = os.environ.get("SNAKEGIT_HOME", expanduser('~/.snakegit'))
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
 parser = ConfigParser.RawConfigParser()
 parser.read(os.path.abspath('snake.cfg'))
+
+
+def _set_dunder_version(version):
+    for root, dirnames, filenames in os.walk('src'):
+        for filename in fnmatch.filter(filenames, '__init__.py'):
+            with open(os.path.join(root, filename)) as handle:
+                new_content = []
+                updated = False
+                for line in handle.readlines():
+                    to_add = line.strip()
+                    if '__version__' in line:
+                        updated = True
+                        to_add = re.sub(r"__version__\s=\s'.*'",
+                            "__version__ = '{0}'".format(version),
+                            line.strip())
+                    new_content.append(to_add)
+                if not updated:
+                    new_content.append("__version__ = '{0}'".format(version))
+            with open(os.path.join(root, filename), 'w') as handle:
+                handle.write("\n".join(new_content))
+            print os.path.join(root, filename)
+            return os.path.join(root, filename)
 
 
 def _python_bin():
@@ -84,6 +105,11 @@ def upload_release_tag():
 
 def python_sdist():
     print "Building python source distribution"
+    version = parser.get('release', 'version')
+    init_path = _set_dunder_version(version)
+    print "Bumped and committed dunder version"
+    sh.git('add', init_path)
+    sh.git.commit(m="'Setting dunder version to {0}'".format(version))
     cmd = [_python_bin(), "setup.py", "sdist"]
     subprocess.call(cmd)
 
