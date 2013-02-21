@@ -111,9 +111,9 @@ def get_existing_tags():
     """
     collector = []
     for line in sh.git('ls-remote', '--tags'):
-        split = line.split('refs')
+        split = line.split('refs/tags/')
         if len(split) >= 1:
-            collector.append("refs" + split[-1].rstrip())
+            collector.append(split[-1].rstrip())
     return collector
     
 def check_release():
