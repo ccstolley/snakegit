@@ -105,6 +105,35 @@ def upload_release_tag():
     sh.git('push', 'origin', tag)
 
 
+def get_existing_tags():
+    """
+    Grab all of the tags that exist at the origin.
+    """
+    collector = []
+    for line in sh.git('ls-remote', '--tags'):
+        split = line.split('refs')
+        if len(split) >= 1:
+            collector.append("refs" + split[-1].rstrip())
+    return collector
+    
+def check_release():
+    """
+    Make sure a release is even possible.
+    """
+    name = parser.get('release', 'name')
+    version = parser.get('release', 'version')
+    tag = "%s/%s" % (name, version)
+    existing_tags = get_existing_tags()
+    if tag in existing_tags:
+        msg = "The tag %s already exists. It is not possible"
+        msg += " to re-release this version currently. If you "
+        msg += "wish to re-release, and you REALLY know what you're doing"
+        msg += " then please delete the tag before running again."
+        print msg % tag
+        sys.exit(1)
+    else:
+        sys.exit(0)
+      
 def python_sdist():
     print "Building python source distribution"
     version = parser.get('release', 'version')
@@ -183,6 +212,8 @@ def main():
         create()
     elif sys.argv[1] == 'upload':
         upload()
+    elif sys.argv[1] == 'check':
+        check_release()
     else:
         print "Unknown release task"
         sys.exit(1)
