@@ -59,7 +59,9 @@ def install_required(venv, cache, index, requirements):
     upgrade_allowed = []
     upgrade_denied = []
     for requirement in requirements:
-        if requirement.specs[0] == "==":
+        if requirement.specs == []:
+            upgrade_allowed.append(requirement)
+        elif requirement.specs[0] == "==":
             upgrade_allowed.append(requirement)
         else:
             upgrade_denied.append(requirement)
