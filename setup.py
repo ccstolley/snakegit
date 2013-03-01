@@ -18,7 +18,7 @@ setuptools.setup(
     description=config.get("release", "description"),
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
-    #   install_requires=requires,
+    install_requires=requires,
     package_data={
       "snakes": ["nyan"]
       },
