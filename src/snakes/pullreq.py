@@ -82,6 +82,18 @@ def create_pull_request(title, body, base, recips):
             sys.exit(1)
 
 
+def get_default_branch(organization):
+    """Retrieve the default branch for the current repo."""
+    _, repo = get_repo_and_user()
+    url = BASE_URL + '/repos/%s/%s' % (organization, repo)
+    try:
+        response = json.loads(make_github_request(url=url).read())
+        return response['master_branch']
+    except urllib2.HTTPError as response:
+        print response.read()
+        sys.exit(1)
+
+
 def make_github_request(*args, **kwargs):
     """Send an authorization token in a github api request."""
     token = get_token()
@@ -91,7 +103,7 @@ def make_github_request(*args, **kwargs):
     return urllib2.urlopen(req)
 
 
-def get_args(organization, members):
+def get_args(organization, members, default_branch):
     """Parse cmdline args."""
     parser = argparse.ArgumentParser(description='Make a pull request.')
     parser.add_argument(
@@ -109,9 +121,10 @@ def get_args(organization, members):
     parser.add_argument(
             '--base',
             dest='base',
-            default='master',
+            default=default_branch,
             required=False,
-            help='branch to create the pull request against')
+            help=('branch to create the pull request against; '
+                'default is "%s" for this repo' % default_branch))
     parser.add_argument(
             '--no-push',
             dest='push',
@@ -173,7 +186,8 @@ def get_members(org):
 def main():
     """Parse the args and create a pull request."""
     members = get_members(ORGANIZATION)
-    args = get_args(ORGANIZATION, members)
+    default_branch = get_default_branch(ORGANIZATION)
+    args = get_args(ORGANIZATION, members, default_branch)
     if args.push:
         push_branch()
     request_response = create_pull_request(
