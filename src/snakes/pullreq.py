@@ -103,9 +103,8 @@ def make_github_request(*args, **kwargs):
     return urllib2.urlopen(req)
 
 
-def get_args(organization, members):
+def get_args(organization, members, default_branch):
     """Parse cmdline args."""
-    default_branch = get_default_branch(organization)
     parser = argparse.ArgumentParser(description='Make a pull request.')
     parser.add_argument(
             '-t',
@@ -187,7 +186,8 @@ def get_members(org):
 def main():
     """Parse the args and create a pull request."""
     members = get_members(ORGANIZATION)
-    args = get_args(ORGANIZATION, members)
+    default_branch = get_default_branch(ORGANIZATION)
+    args = get_args(ORGANIZATION, members, default_branch)
     if args.push:
         push_branch()
     request_response = create_pull_request(
