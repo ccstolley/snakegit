@@ -52,13 +52,13 @@ def _python_bin():
     return abspath("{0}/bin/python".format(venv))
 
 
-def upload():
+def upload(upload_release_file):
     upload_release_tag()
     if parser.has_option('release', 'app_and_lib'):
         upload_pypi()
-        upload_gearbox_app()
+        upload_gearbox_app(upload_release_file)
     elif os.path.exists(os.path.abspath('./_gb')):
-        upload_gearbox_app()
+        upload_gearbox_app(upload_release_file)
     elif os.path.exists(os.path.abspath('./setup.py')):
         upload_pypi()
 
@@ -86,7 +86,7 @@ def upload_pypi():
             sys.exit(1)
 
 
-def upload_gearbox_app():
+def upload_gearbox_app(upload_release_file):
     name = parser.get('release', 'name')
     version = parser.get('release', 'version')
     s3_conn = boto.connect_s3()
@@ -95,7 +95,10 @@ def upload_gearbox_app():
     key.key = '{0}/{1}.tar.gz'.format(name, version)
     key.set_contents_from_filename('gearbox_dist/{0}.tar.gz'.format(version))
     print "Uploaded gearbox update"
-
+    if upload_release_file:
+        key = boto.s3.key.Key(bucket)
+        key.key = '{0}/LATEST'.format(name)
+        key.set_contents_from_string(version)
 
 def upload_release_tag():
     name = parser.get('release', 'name')
@@ -208,10 +211,15 @@ def main():
     if len(sys.argv) == 1:
         print "either specify create or upload"
         sys.exit(1)
+
+    update_release_file = False 
+    if len(sys.argv) > 2 and sys.argv[2] == '--update-release-file':
+       update_release_file = True; 
+
     if sys.argv[1] == 'create':
         create()
     elif sys.argv[1] == 'upload':
-        upload()
+        upload(update_release_file)
     elif sys.argv[1] == 'check':
         check_release()
     else:
