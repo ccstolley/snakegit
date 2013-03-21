@@ -12,6 +12,7 @@ import json
 
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
 chef_repo = os.environ.get('CHEF_REPO', 'git@github.com:NarrativeScience/chef-repo.git')
+deploy_private_key_file = os.environ.get('DEPLOY_PRIVATE_KEY_FILE', '/home/ubuntu/.ssh/id_deploy')
 
 def deploy(package, stage):
     print 'Deploying {0} to {1}'.format(package,stage)
@@ -25,13 +26,17 @@ def deploy(package, stage):
     # Commit and push to chef-repo
     print sh.git('add', '-A')
     print sh.git('commit', '-m', 'AUTODEPLOYER: Update version of {0} to {1}'.format(package, version))
-    #print sh.git('push')
+    print sh.git('push')
     print 'Updated environment in chef-repo with new package version'
     # Run chef-client on all the hosts
     print sh.knife('environment', 'from', 'file', env_config_file_path)
-#TODO(trahan): fix this to call 'sudo chef-client'.  Needs passwordless sudo user/private key
-    print sh.knife('ssh', 'chef_environment:{0}'.format(stage), 'ls /tmp')
+    p = sh.knife('ssh', '--ssh-user', 'nsdeploy', '--identity-file', deploy_private_key_file, 'chef_environment:{0}'.format(stage), 'sudo chef-client', _out=process_output)
+    p.wait()
     print 'chef-client finished on all hosts!  Deployment done.'
+
+def process_output(line):
+    '''Callable used so we can get the output to calling chef-client line by line'''
+    sys.stdout.write(line)
 
 def get_latest_version(package):
     '''
