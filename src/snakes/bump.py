@@ -21,6 +21,9 @@ def main():
     parser.add_argument("-s", "--snapshot",
         action="store_true",
         help="This is a snapshot version")
+    parser.add_argument("-f", "--force",
+        action="store_true",
+        help="Don't prompt to bump version, just do it")
     args = parser.parse_args()
     config = ConfigParser.RawConfigParser()
     config.read("./snake.cfg")
@@ -42,13 +45,20 @@ def main():
 
     prompt = "You are about to bump the version from {0} to {1}.".format(current_version, version)
 
+    if args.force:
+        bump_version(config, version)
+        return
+
     if snakes.util.confirm(prompt):
-        config.set('release', 'version', version)
-        with open('./snake.cfg', 'w') as f:
-            config.write(f)
-        print clint.textui.colored.blue("Version updated.")
+        bump_version(config, version)
     else:
         print clint.textui.colored.yellow("Not bumping version.")
+
+def bump_version(config, version):
+    config.set('release', 'version', version)
+    with open('./snake.cfg', 'w') as f:
+        config.write(f)
+    print clint.textui.colored.blue("Version updated.")
 
 if __name__ == '__main__':
     main()
