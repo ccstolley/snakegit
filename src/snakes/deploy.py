@@ -30,7 +30,7 @@ def deploy(package, stage):
     print 'Updated environment in chef-repo with new package version'
     # Run chef-client on all the hosts
     print sh.knife('environment', 'from', 'file', env_config_file_path)
-    p = sh.knife('ssh', '--ssh-user', 'nsdeploy', '--identity-file', deploy_private_key_file, 'chef_environment:{0}'.format(stage), 'sudo chef-client', _out=process_output)
+    p = sh.knife('ssh', '--ssh-user', 'nsdeploy', '--identity-file', deploy_private_key_file, 'chef_environment:{0}'.format(stage), 'sudo chef-client', _out=process_output, _err=process_output)
     p.wait()
     print 'chef-client finished on all hosts!  Deployment done.'
 
