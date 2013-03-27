@@ -12,6 +12,7 @@ import json
 
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
 chef_repo = os.environ.get('CHEF_REPO', 'git@github.com:NarrativeScience/chef-repo.git')
+chef_home = os.environ.get('CHEF_HOME', '/home/ubuntu/.chef');
 deploy_private_key_file = os.environ.get('DEPLOY_PRIVATE_KEY_FILE', '/home/ubuntu/.ssh/id_deploy')
 
 def deploy(package, stage):
@@ -29,8 +30,8 @@ def deploy(package, stage):
     print sh.git('push')
     print 'Updated environment in chef-repo with new package version'
     # Run chef-client on all the hosts
-    print sh.knife('environment', 'from', 'file', env_config_file_path)
-    p = sh.knife('ssh', '--ssh-user', 'nsdeploy', '--identity-file', deploy_private_key_file, 'chef_environment:{0}'.format(stage), 'sudo chef-client', _out=process_output, _err=process_output)
+    print sh.knife('environment', 'from', 'file', env_config_file_path, '--config', '{0}/knife.rb'.format(chef_home))
+    p = sh.knife('ssh', '--ssh-user', 'nsdeploy', '--identity-file', deploy_private_key_file, 'chef_environment:{0}'.format(stage), 'sudo chef-client', '--config', '{0}/knife.rb'.format(chef_home), _out=process_output, _err=process_output)
     p.wait()
     print 'chef-client finished on all hosts!  Deployment done.'
 
