@@ -77,7 +77,7 @@ def get_service_version(from_env_config_file_path, service):
     fp = open(from_env_config_file_path)
     from_env = json.loads(fp.read())
     fp.close
-    return from_env['override_attributes']['gearbox']['versions'][service]
+    return from_env['default_attributes']['gearbox']['versions'][service]
 
 
 def process_output(line):
