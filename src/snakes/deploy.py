@@ -81,7 +81,7 @@ def update_environment_config(env_config_file_path, package, version):
     env_config = json.load(json_in)
     json_in.close()
     # Update service version
-    versions = env_config['override_attributes']['gearbox']['versions']
+    versions = env_config['default_attributes']['gearbox']['versions']
     if package not in versions:
         raise RuntimeError('Service doesn\'t exist in environment config for {0}'.format(package))
     versions[package] = version
