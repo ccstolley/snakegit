@@ -150,6 +150,27 @@ def python_sdist():
 
 def gearbox_dist():
     print "Build gearbox distribution"
+    
+    if exists(os.path.abspath('./Gemfile')):
+        gearbox_ruby_dist()
+    else:
+        gearbox_python_dist()
+
+    cwd = os.getcwd()
+
+    if not exists('./gearbox_dist'):
+        os.mkdir('./gearbox_dist')
+    os.chdir('gearbox')
+    version = parser.get('release', 'version')
+    cmd = ["tar",
+            "-czvf",
+            "../gearbox_dist/{0}.tar.gz".format(version),
+            "."]
+    subprocess.call(cmd)
+    os.chdir(cwd)
+
+
+def gearbox_python_dist():
     cmd = [_python_bin(), "setup.py", "install"]
     subprocess.call(cmd)
     cmd = ["{0}/bin/virtualenv".format(home),
@@ -169,8 +190,8 @@ def gearbox_dist():
         "_gb/gbtemplate/",
         "gearbox/gbtemplate/"]
     subprocess.call(cmd)
+    
     cwd = os.getcwd()
-
     if parser.has_option('release', 'flask_blueprint_root'):
         for dir_name in ["static", "templates"]:
             pattern = re.compile("src\/(.*)\/{0}".format(dir_name))
@@ -183,18 +204,19 @@ def gearbox_dist():
                         "gearbox/{0}".format(trail)]
                 subprocess.call(command)
 
-    if not exists('./gearbox_dist'):
-        os.mkdir('./gearbox_dist')
-    os.chdir('gearbox')
-    version = parser.get('release', 'version')
-    cmd = ["tar",
-            "-czvf",
-            "../gearbox_dist/{0}.tar.gz".format(version),
-            "."]
+
+def gearbox_ruby_dist():
+    sh.gem('install', 'bundler')
+    sh.bundle('install', '--deployment')
+    if exists('./gearbox'):
+        shutil.rmtree('./gearbox')
+    os.mkdir('./gearbox')
+    cmd = ["rsync",
+            "-arv",
+            "Gemfile", "Gemfile.lock", "bin", "vendor",
+            "gearbox/"]
     subprocess.call(cmd)
-    os.chdir(cwd)
-
-
+    
 def create():
     if parser.has_option('release', 'app_and_lib'):
         python_sdist()
