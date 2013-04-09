@@ -156,6 +156,12 @@ def gearbox_dist():
     else:
         gearbox_python_dist()
 
+    cmd = ["rsync",
+        "-arv",
+        "_gb/gbtemplate/",
+        "gearbox/gbtemplate/"]
+    subprocess.call(cmd)
+
     cwd = os.getcwd()
 
     if not exists('./gearbox_dist'):
@@ -185,12 +191,7 @@ def gearbox_python_dist():
         "{0}/".format(venv),
         "gearbox/"]
     subprocess.call(cmd)
-    cmd = ["rsync",
-        "-arv",
-        "_gb/gbtemplate/",
-        "gearbox/gbtemplate/"]
-    subprocess.call(cmd)
-    
+       
     cwd = os.getcwd()
     if parser.has_option('release', 'flask_blueprint_root'):
         for dir_name in ["static", "templates"]:
@@ -213,7 +214,7 @@ def gearbox_ruby_dist():
     os.mkdir('./gearbox')
     cmd = ["rsync",
             "-arv",
-            "Gemfile", "Gemfile.lock", "bin", "vendor",
+            "Gemfile", "Gemfile.lock", "bin", "vendor", "lib", "Rakefile",
             "gearbox/"]
     subprocess.call(cmd)
     
