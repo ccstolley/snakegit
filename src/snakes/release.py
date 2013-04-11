@@ -214,7 +214,7 @@ def gearbox_ruby_dist():
     os.mkdir('./gearbox')
     cmd = ["rsync",
             "-arv",
-            "Gemfile", "Gemfile.lock", "bin", "vendor", "lib", "Rakefile",
+            "Gemfile", "Gemfile.lock", ".bundle", "bin", "vendor", "lib", "Rakefile",
             "gearbox/"]
     subprocess.call(cmd)
     
