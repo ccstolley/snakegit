@@ -58,6 +58,8 @@ def promote(service_and_role, from_stage, to_stage):
         query_string = query_string + " AND roles:%s" % role
     p = sh.knife(
         'ssh',
+        '--concurrency',
+        '1',
         '--ssh-user',
         'nsdeploy',
         '--identity-file',
