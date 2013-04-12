@@ -85,7 +85,7 @@ def _push_change(requirement):
     name = _parse_name_from_cfg('./snake.cfg')
     message = 'AUTOBUILD bumped {0} {1} requirement'.format(name, requirement)
     sh.git.commit(message=message)
-    # sh.git.push()
+    sh.git.push()
 
 
 def main():
