@@ -6,6 +6,7 @@ import sh
 import argparse
 import boto
 import boto.s3.key
+from collections import OrderedDict
 import json
 
 bucket_name = os.environ.get('GEARBOX_BUCKET', 's3_ops')
@@ -77,18 +78,17 @@ def update_environment_config(env_config_file_path, package, version):
     if not os.path.isfile(env_config_file_path):
         raise RuntimeError('Environment config file doesn\'t exist: {0}'.format(env_config_file_path))
     # Read file
-    json_in = open(env_config_file_path)
-    env_config = json.load(json_in)
-    json_in.close()
+    with open(env_config_file_path) as f:
+        env_config = json.JSONDecoder(object_pairs_hook=OrderedDict)\
+            .decode(f.read())
     # Update service version
     versions = env_config['default_attributes']['gearbox']['versions']
     if package not in versions:
         raise RuntimeError('Service doesn\'t exist in environment config for {0}'.format(package))
     versions[package] = version
     # Write out file
-    json_out = open(env_config_file_path, 'w+')
-    json.dump(env_config, json_out, indent=4)
-    json_out.close()
+    with open(env_config_file_path, 'w+') as f:
+        json.dump(env_config, f, indent=4)
 
 
 def main():
