@@ -39,11 +39,14 @@ setuptools.setup(name=parser.get('release', 'name'),
     version=parser.get('release', 'version'),
     package_dir={'': 'src'},
     packages=setuptools.find_packages('src'),
-    provides=setuptools.find_packages('src')
+    provides=setuptools.find_packages('src'),
+    install_requires=open('requirements.txt').readlines()
     )
 """
 
-manifest_in_template = "include snake.cfg"
+manifest_in_template = """
+include snake.cfg
+include requirements.txt"""
 
 def main():
     """
@@ -72,7 +75,7 @@ def main():
             for ignore in ignore_list:
                 handle.write(ignore)
         git_updated = True
-    
+
     if updated:
         repo.index.add(['.gitignore'])
     # make test and doc directories
@@ -113,7 +116,7 @@ setup.py to pull in the snake.cfg details.  Here is an example:
             parser.set('release', field, metadata[field])
         with open('snake.cfg', 'w') as handle:
             parser.write(handle)
-        git_updated = True    
+        git_updated = True
     if not os.path.exists(os.path.abspath('MANIFEST.in')):
         with open('MANIFEST.in', 'w') as handle:
             handle.write(manifest_in_template)
@@ -127,7 +130,7 @@ setup.py to pull in the snake.cfg details.  Here is an example:
             with open('MANIFEST.in', 'a') as handle:
                 handle.write(manifest_in_template)
             git_updated = True
-    
+
     if not os.path.exists('requirements.txt'):
         with open('requirements.txt', 'w') as handle:
             handle.write('# Created by Gitsnake. HISSSSSSSSSSSSSSSSSSSSSSSSS\n')
@@ -138,7 +141,7 @@ setup.py to pull in the snake.cfg details.  Here is an example:
     if git_updated:
         print "A number of resources have been added to your git repo."
         print "Don't forget to commit them"
-    
+
 
 if __name__ == '__main__':
     main()
