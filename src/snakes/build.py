@@ -51,7 +51,6 @@ def find_required(venv, file_):
 def install_required(venv, cache, index, requirements):
     pip = sh.Command("{0}/bin/pip".format(venv))
     print "Installing: %s" % unicode(requirements)
-    cache = "file://{0}".format(cache)
     # The upgrade=True flag causes system installed packages (e.g. Numpy)
     # To install every time, even if -s has been added to the build command.
     # Thus we separate requirements into two lists, those who use ==
@@ -65,15 +64,16 @@ def install_required(venv, cache, index, requirements):
             upgrade_allowed.append(requirement)
         else:
             upgrade_denied.append(requirement)
-    for line in pip.install(*upgrade_allowed, find_links=cache, index_url=index,
-                            build="build", download_cache=cache,
-                            exists_action="i", _iter=True, upgrade=True):
-        sys.stdout.write(line)
-
-    for line in pip.install(*upgrade_denied, find_links=cache, index_url=index,
-                            build="build", download_cache=cache,
-                            exists_action="i", _iter=True):
-        sys.stdout.write(line)
+    if len(upgrade_allowed) > 0:
+        for line in pip.install(*upgrade_allowed, find_links=cache, index_url=index,
+                                build="build", download_cache=cache,
+                                exists_action="i", _iter=True, upgrade=True):
+            sys.stdout.write(line)
+    if len(upgrade_denied) > 0:
+        for line in pip.install(*upgrade_denied, find_links=cache, index_url=index,
+                                build="build", download_cache=cache,
+                                exists_action="i", _iter=True):
+            sys.stdout.write(line)
 
 
 
