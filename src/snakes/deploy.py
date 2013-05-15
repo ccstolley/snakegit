@@ -33,26 +33,26 @@ def deploy(package, stage, role=None):
         print sh.git('commit', '-am', 'AUTODEPLOYER: Update version of {0} to {1}'.format(package, version))
         print sh.git('push')
         print 'Updated environment in chef-repo with new package version'
-        # Run chef-client on all the hosts
         print sh.knife('environment', 'from', 'file', env_config_file_path, '--config', '{0}/knife.rb'.format(chef_home))
-        query_string = 'chef_environment:{0}'.format(stage)
-        if role:
-            query_string = query_string + " AND roles:%s" % role
-        p = sh.knife(
-            'ssh',
-            '--ssh-user',
-            'nsdeploy',
-            '--identity-file',
-            deploy_private_key_file,
-            query_string,
-            'sudo chef-client',
-            '--config',
-            '{0}/knife.rb'.format(chef_home),
-            _out=process_output,
-            _err=process_output
-        )
-        p.wait()
-        print 'chef-client finished on all hosts!  Deployment done.'
+    # Run chef-client on all the hosts
+    query_string = 'chef_environment:{0}'.format(stage)
+    if role:
+        query_string = query_string + " AND roles:%s" % role
+    p = sh.knife(
+        'ssh',
+        '--ssh-user',
+        'nsdeploy',
+        '--identity-file',
+        deploy_private_key_file,
+        query_string,
+        'sudo chef-client',
+        '--config',
+        '{0}/knife.rb'.format(chef_home),
+        _out=process_output,
+        _err=process_output
+    )
+    p.wait()
+    print 'chef-client finished on all hosts!  Deployment done.'
 
 
 def process_output(line):
