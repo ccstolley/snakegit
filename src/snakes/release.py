@@ -100,6 +100,7 @@ def upload_gearbox_app(upload_release_file):
         key.key = '{0}/LATEST'.format(name)
         key.set_contents_from_string(version)
 
+
 def upload_release_tag():
     name = parser.get('release', 'name')
     version = parser.get('release', 'version')
@@ -118,7 +119,8 @@ def get_existing_tags():
         if len(split) >= 1:
             collector.append(split[-1].rstrip())
     return collector
-    
+
+
 def check_release():
     """
     Make sure a release is even possible.
@@ -136,7 +138,8 @@ def check_release():
         sys.exit(1)
     else:
         sys.exit(0)
-      
+
+
 def python_sdist():
     print "Building python source distribution"
     version = parser.get('release', 'version')
@@ -150,9 +153,11 @@ def python_sdist():
 
 def gearbox_dist():
     print "Build gearbox distribution"
-    
+
     if exists(os.path.abspath('./Gemfile')):
         gearbox_ruby_dist()
+    elif exists(os.path.abspath('./package.json')):
+        gearbox_js_dist()
     else:
         gearbox_python_dist()
 
@@ -176,6 +181,12 @@ def gearbox_dist():
     os.chdir(cwd)
 
 
+def create_gearbox_dir():
+    if exists('./gearbox'):
+        shutil.rmtree('./gearbox')
+    os.mkdir('./gearbox')
+
+
 def gearbox_python_dist():
     cmd = [_python_bin(), "setup.py", "install"]
     subprocess.call(cmd)
@@ -183,15 +194,14 @@ def gearbox_python_dist():
             "--relocatable",
             venv]
     subprocess.call(cmd)
-    if exists('./gearbox'):
-        shutil.rmtree('./gearbox')
-    os.mkdir('./gearbox')
+
+    create_gearbox_dir()
     cmd = ["rsync",
         "-arv",
         "{0}/".format(venv),
         "gearbox/"]
     subprocess.call(cmd)
-       
+
     cwd = os.getcwd()
     if parser.has_option('release', 'flask_blueprint_root'):
         for dir_name in ["static", "templates"]:
@@ -209,15 +219,27 @@ def gearbox_python_dist():
 def gearbox_ruby_dist():
     sh.gem('install', 'bundler')
     sh.bundle('install', '--deployment')
-    if exists('./gearbox'):
-        shutil.rmtree('./gearbox')
-    os.mkdir('./gearbox')
+    create_gearbox_dir()
     cmd = ["rsync",
             "-arv",
             "Gemfile", "Gemfile.lock", ".bundle", "bin", "vendor", "lib", "Rakefile",
             "gearbox/"]
     subprocess.call(cmd)
-    
+
+
+def gearbox_js_dist():
+    '''For javascript/coffeescript package, install npm dependencies specified
+    in package.json then run any build scripts with nsjs.'''
+    sh.npm.install()
+    sh.nsjs.build()
+    create_gearbox_dir()
+    cmd = ["rsync",
+            "-arv",
+            "package.json", "node_modules", "lib",
+            "gearbox/"]
+    subprocess.call(cmd)
+
+
 def create():
     if parser.has_option('release', 'app_and_lib'):
         python_sdist()
@@ -235,9 +257,9 @@ def main():
         print "either specify create or upload"
         sys.exit(1)
 
-    update_release_file = False 
+    update_release_file = False
     if len(sys.argv) > 2 and sys.argv[2] == '--update-release-file':
-       update_release_file = True; 
+       update_release_file = True;
 
     if sys.argv[1] == 'create':
         create()
