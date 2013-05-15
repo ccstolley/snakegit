@@ -230,8 +230,18 @@ def gearbox_ruby_dist():
 def gearbox_js_dist():
     '''For javascript/coffeescript package, install npm dependencies specified
     in package.json then run any build scripts with nsjs.'''
-    sh.npm.install()
-    sh.nsjs.build()
+    try:
+        sh.npm.install()
+    except sh.CommandNotFound, e:
+        print 'Node Package Manager (npm) is not installed. Install nodejs >= 0.8 to get npm.'
+        sys.exit(1)
+    try:
+        sh.nsjs.build()
+    except sh.CommandNotFound, e:
+        print 'NSJS package is not installed. '\
+            + 'Run `npm install -g '\
+            + 'git+ssh://git@github.com:NarrativeScience/nsjs.git#develop`.'
+        sys.exit(1)
     create_gearbox_dir()
     cmd = ["rsync",
             "-arv",
