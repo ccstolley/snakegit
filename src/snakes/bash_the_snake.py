@@ -5,10 +5,16 @@ profile_d = """
 function snakeskin()
 {
     export OLDPATH=$PATH
-    test -f snake.cfg || (echo "Not a snake project" ; return 0)
-    test -f vendor/python/bin/activate || git snake build
-    source vendor/python/bin/activate
-    export PATH=$PATH:~/.snakegit/bin
+    export OLDPYTHONPATH=$PYTHONPATH
+    if [ -f snake.cfg ]
+    then
+        test -f vendor/python/bin/activate || git snake build
+        source vendor/python/bin/activate
+        export PATH=$PATH:~/.snakegit/bin
+        export PYTHONPATH=$PYTHONPATH:.
+    else
+        echo "Not a Snakegit Project"
+    fi
 }
 
 # when you are done call shed to deactivate the virtualenv
@@ -17,6 +23,7 @@ function shed()
 {
     deactivate > /dev/null 2>&1 ; true
     export PATH=$OLDPATH
+    export PYTHONPATH=$OLDPYTHONPATH
 }
 
 export PATH=$PATH:~/.snakegit/bin:$SNAKEGIT_HOME
