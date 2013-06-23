@@ -61,14 +61,14 @@ def get_repo_and_user():
 
 def create_pull_request(title, body, base, recips):
     """Create the pull request."""
-    branch = get_branch
+    branch = get_branch()
     if branch is None:
         print 'detached head'
         sys.exit(1)
     else:
         user, repo = get_repo_and_user()
         body = body + '\n' + ' '.join('@' + recip for recip in recips)
-        head = get_branch()
+        head = branch
         args = {'title': title,
                 'body': body,
                 'head': head,
